@@ -1,0 +1,6 @@
+{
+  "base_url": "https://e2e.evershop.app/admin/login",
+  "email": "admin@e2eevershop.com",
+  "password": "A0F4IQUHPvgOsZ44",
+  "timeout": "30"
+}
