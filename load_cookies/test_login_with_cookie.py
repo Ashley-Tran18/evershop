@@ -83,19 +83,31 @@ ADMIN_URL = f"{BASE_URL}/admin"
 COOKIE_FILE = "cookie_value.json"  # file JSON vừa được tạo
 
 
-def load_cookie_from_json(file_path):
+import json
+import pytest
+import os
+
+BASE_DIR = os.path.dirname(__file__)
+COOKIE_FILE = os.path.join(BASE_DIR, "cookie_value.json")
+
+def load_cookie_from_json(file_path=COOKIE_FILE):
     """Đọc cookie string từ file JSON"""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        cookie_str = data.get("cookie") or data.get("cookie_value")
+
+        print(f"DEBUG JSON DATA: {data}")  # giúp kiểm tra thực tế file
+
+        cookie_str = data.get("header_cookie")
         if not cookie_str:
-            pytest.skip(f"⚠️ Không tìm thấy key 'cookie' trong {file_path}")
+            raise ValueError(f"⚠️ Không tìm thấy key 'header_cookie' trong {file_path}. Data: {data}")
+
         return cookie_str.strip()
+
     except FileNotFoundError:
-        pytest.skip(f"⚠️ Không tìm thấy file {file_path}")
+        raise FileNotFoundError(f"⚠️ Không tìm thấy file {file_path}")
     except json.JSONDecodeError:
-        pytest.skip(f"⚠️ File {file_path} không phải JSON hợp lệ")
+        raise ValueError(f"⚠️ File {file_path} không phải JSON hợp lệ")
 
 
 def parse_cookie_string(cookie_str):
@@ -117,7 +129,7 @@ def parse_cookie_string(cookie_str):
 def driver():
     """Tạo WebDriver (Chrome) cho toàn bộ session"""
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless=new")  # bỏ dòng này nếu muốn thấy browser
+    # options.add_argument("--headless=new")  # bỏ dòng này nếu muốn thấy browser
     options.add_argument("--window-size=1920,1080")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     yield driver
@@ -131,6 +143,11 @@ def test_login_with_cookie(driver):
     cookie = parse_cookie_string(cookie_str)
 
     driver.get(BASE_URL)
+    time.sleep(1)
+
+    driver.delete_all_cookies()  # Xóa toàn bộ cookies của trình duyệt
+    driver.execute_script("window.localStorage.clear();")  # Xóa localStorage
+    driver.execute_script("window.sessionStorage.clear();")  # Xóa sessionStorage
     time.sleep(1)
 
     # Thử add cookie (bắt lỗi domain)

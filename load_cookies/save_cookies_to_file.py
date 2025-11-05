@@ -123,7 +123,7 @@ def save_cookies_to_file(
     wait_time=25
 ):
     """
-    Mở trình duyệt → chờ người dùng đăng nhập thủ công → lưu cookies vào file JSON hoặc dạng header-ready.
+    Mở trình duyệt → chờ người dùng đăng nhập thủ công → lưu cookie sid + asid vào file JSON.
     """
 
     chrome_options = Options()
@@ -139,25 +139,38 @@ def save_cookies_to_file(
         # 2️⃣ Chờ user login
         time.sleep(wait_time)
 
-        # 3️⃣ Lấy cookies sau khi login
+        # 3️⃣ Đợi cho tới khi vào trang /admin
+        if "/admin" not in driver.current_url:
+            print("⚠️ Có vẻ bạn chưa login xong. Đang chờ thêm 10s...")
+            time.sleep(10)
+
+        # 4️⃣ Lấy toàn bộ cookie
         cookies = driver.get_cookies()
         print(f"✅ Đã lấy {len(cookies)} cookie(s).")
 
-        # 4️⃣ Tạo dạng “header-style” name=value; name2=value2
-        header_cookie_string = "; ".join([f"{c['name']}={c['value']}" for c in cookies])
-        print("🍪 Header-style cookie string:")
-        print(header_cookie_string)
+        # 5️⃣ Lọc 2 cookie quan trọng
+        sid_cookie = next((c for c in cookies if c["name"] == "sid"), None)
+        asid_cookie = next((c for c in cookies if c["name"] == "asid"), None)
 
-        # 5️⃣ Lưu cả 2 dạng: raw list và header string
-        output_data = {
-            "header_cookie": header_cookie_string,
-            "cookies": cookies
-        }
+        if sid_cookie or asid_cookie:
+            # Ghép chúng lại dạng header string
+            cookie_parts = []
+            if sid_cookie:
+                cookie_parts.append(f"{sid_cookie['name']}={sid_cookie['value']}")
+            if asid_cookie:
+                cookie_parts.append(f"{asid_cookie['name']}={asid_cookie['value']}")
 
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(output_data, f, indent=4, ensure_ascii=False)
+            header_cookie_string = "; ".join(cookie_parts)
+            header_cookie = {"header_cookie": header_cookie_string}
 
-        print(f"💾 Cookies đã được lưu tại: {output_path}")
+            # 6️⃣ Lưu cookie vào file JSON
+            with open(output_path, "w", encoding="utf-8") as f:
+                json.dump(header_cookie, f, indent=4, ensure_ascii=False)
+
+            print(f"💾 Đã lưu cookie hợp lệ: {header_cookie_string}")
+            print(f"📁 File lưu tại: {output_path}")
+        else:
+            print("⚠️ Không tìm thấy cookie 'sid' hoặc 'asid' — hãy đảm bảo đã login vào trang admin thành công.")
 
     finally:
         driver.quit()
@@ -167,7 +180,6 @@ def save_cookies_to_file(
 # Ở cuối file
 def test_save_cookie():
     save_cookies_to_file(
-        output_path= r"C:\Users\ThaoTran\Downloads\Automation file\e2e\load_cookies\cookie_value.json",
+        output_path=r"C:\Users\ThaoTran\Downloads\Automation file\e2e\load_cookies\cookie_value.json",
         wait_time=30
     )
-

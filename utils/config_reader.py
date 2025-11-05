@@ -21,11 +21,35 @@ class ConfigReader:
     def get_timeout():
         return int(ConfigReader.load_config()['timeout'])
 
+    # @staticmethod
+    # def get_email_password():
+    #     config = ConfigReader.load_config()
+    #     return config['email'], config['password']
+
     @staticmethod
-    def get_email_password():
-        config = ConfigReader.load_config()
-        return config['email'], config['password']
-    
+    def get_credentials():
+        return ConfigReader.load_config()['credentials']
+
+    @staticmethod
+    def get_login_attempts():
+        """
+        Trả về danh sách các attempt (invalid + valid login)
+        lấy từ credentials trong file config.
+        """
+        creds = ConfigReader.get_credentials()
+
+        attempts = [
+            {
+                "email": creds["invalid_email"],
+                "password": creds["invalid_password"],
+            },
+            {
+                "email": creds["email"],
+                "password": creds["password"],
+            }
+        ]
+        return attempts
+
     @staticmethod
     def get_user_information():
         return ConfigReader.load_config()['pages_url']

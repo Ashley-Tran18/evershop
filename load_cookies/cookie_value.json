@@ -1,25 +1,3 @@
 {
-    "header_cookie": "sid=s%3AmM4t1hFC0RXfKKkAlWr_NZFw9r-bAhRD.SiE0WnYeDCnLCgnRGF9UpWB%2BVmiD9hXvfC3YgOa87AA; asid=s%3ANul6w2G3h1fogAzPUygwHvCAR1iKQgWt.No3QvUnM7lpnNzUpdlMOkqf74jem0i0H2Q6ZNMRt8zg",
-    "cookies": [
-        {
-            "domain": "e2e.evershop.app",
-            "expiry": 1762332719,
-            "httpOnly": true,
-            "name": "sid",
-            "path": "/",
-            "sameSite": "Lax",
-            "secure": false,
-            "value": "s%3AmM4t1hFC0RXfKKkAlWr_NZFw9r-bAhRD.SiE0WnYeDCnLCgnRGF9UpWB%2BVmiD9hXvfC3YgOa87AA"
-        },
-        {
-            "domain": "e2e.evershop.app",
-            "expiry": 1762332718,
-            "httpOnly": true,
-            "name": "asid",
-            "path": "/",
-            "sameSite": "Lax",
-            "secure": false,
-            "value": "s%3ANul6w2G3h1fogAzPUygwHvCAR1iKQgWt.No3QvUnM7lpnNzUpdlMOkqf74jem0i0H2Q6ZNMRt8zg"
-        }
-    ]
+    "header_cookie": "asid=s%3A0yKQyxWcsahWhAITkDSwuhETAut8V4wV.xWhCFIspDGyTGvST5cM%2BXAR8z1j4Mzdi5eHq7DY0ai0"
 }
