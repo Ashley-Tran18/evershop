@@ -8,6 +8,7 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver    
         self.timeout = ConfigReader.get_timeout()
+        self.actions = ActionChains(driver)
      
     def find_element(self, locator):
         return WebDriverWait(self.driver, self.timeout).until(
@@ -26,7 +27,7 @@ class BasePage:
         element.click()
     
     def send_keys(self, locator, text):
-        self.wait_for_element_visible(locator).clear()
+        # self.wait_for_element_visible(locator).clear()
         self.wait_for_element_visible(locator).send_keys(text)
     
     def get_text(self, locator):
