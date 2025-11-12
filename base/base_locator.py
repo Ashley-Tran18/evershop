@@ -9,6 +9,8 @@ class BaseLocator:
 
         # General Locators
         self.toast_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]")
+        self.save_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
+
         
         # Login Page Locators
         self.email_input = (By.XPATH, "//div[@class = 'form-field']//input[@id = 'field-email']")
@@ -61,10 +63,6 @@ class BaseLocator:
         self.category_table = (By.XPATH, "//table//tr//td[2]//a")
 
 
-
-
-
-        
         # Products Page Locators
         self.products_menu = (By.XPATH, "//li[@class='root-nav-item nav-item']//a[@href='https://e2e.evershop.app/admin/products']")
         self.new_product_btn = (By.XPATH, "//div[@class = 'flex justify-end space-x-2 items-center']//span[text() = 'New Product']")
@@ -100,11 +98,20 @@ class BaseLocator:
        
 
 
-
-
-
-
-
+        # Attributes Page Locators
+        self.attributes_menu = (By.XPATH, "//li[@class='root-nav-item nav-item']//a[@href='https://e2e.evershop.app/admin/attributes']")
+        self.new_attribute_btn = (By.XPATH, "//div[@class = 'flex justify-end space-x-2 items-center']//span[text() = 'New Attribute']")
+        self.attribute_name_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-attribute_name']")
+        self.attribute_code_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-attribute_code']")
+        self.attribute_text_type = (By.XPATH, "//div[@class = 'radio-group']//input[@id = 'field-type-text']")
+        self.attribute_select_type = (By.XPATH, "//div[@class = 'radio-group']//input[@id = 'field-type-select']")
+        self.attribute_multiselect_type = (By.XPATH, "//div[@class = 'radio-group']//input[@id = 'field-type-multiselect']")
+        self.attribute_textarea_type = (By.XPATH, "//div[@class = 'radio-group']//input[@id = 'field-type-textarea']")
+        self.attribute_group_select = (By.XPATH, "//div[@class = 'css-b62m3t-container']")
+        self.attribute_default_group = (By.XPATH, "//div[@class = 'css-1nmdiq5-menu']//div[@class = 'css-d7l1ni-option']")
+        self.attribute_group_input = (By.XPATH, "//div[@class = 'grid gap-5 grid-cols-1']")
+        self.attribute_sort_order_input = (By.XPATH, "//div[@class= 'form-field']//input[@id = 'field-sort_order']")
+        
 
 
 

@@ -35,5 +35,13 @@
     "category_url_key": "furniture",
     "category_meta_title": "Furniture",
     "category_meta_description": "category meta description"
+},
+"attribute_data":{
+    "attribute_name": "Quality",
+    "attribute_code": "attribute_code",
+    "attribute_sort_order": "1"
+
 }
 }
+
+
