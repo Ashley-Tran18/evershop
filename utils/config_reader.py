@@ -58,8 +58,9 @@ class ConfigReader:
     def get_product_data():
         return ConfigReader.load_config()['product_data']
     
-
-    
+    @staticmethod
+    def get_category_data():
+        return ConfigReader.load_config()['category_data']
 
         
         

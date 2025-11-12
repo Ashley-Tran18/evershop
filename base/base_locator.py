@@ -5,6 +5,10 @@ class BaseLocator:
     def __init__(self, driver):
         self.driver = driver    
         self.timeout = ConfigReader.get_timeout()
+
+
+        # General Locators
+        self.toast_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]")
         
         # Login Page Locators
         self.email_input = (By.XPATH, "//div[@class = 'form-field']//input[@id = 'field-email']")
@@ -35,6 +39,31 @@ class BaseLocator:
 
         
         # Categories Page Locators
+        self.categories_menu = (By.XPATH, "//li[@class='root-nav-item nav-item']//a[@href='https://e2e.evershop.app/admin/categories']")
+        self.new_category_btn = (By.XPATH, "//div[@class = 'flex justify-end space-x-2 items-center']//span[text() = 'New Category']")
+        self.category_name_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-name']")
+        self.category_des_type = (By.XPATH, "//div[contains(@class , 'row-templates')]//a[2]")
+        self.category_available_block_1 = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][1]")
+        self.category_des_type_plus_1 = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][1]//div[@class = 'ce-toolbar__plus']")
+        self.category_des_heading_select = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][1]//div[text() = 'Heading']")
+        self.category_heading_input = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][1]//h2[@class = 'ce-header']")
+        self.category_available_block_2 = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][2]//div[@class = 'ce-paragraph cdx-block']")
+        self.category_des_type_plus_2 = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][2]//div[@class = 'ce-toolbar__plus']")
+        self.category_des_list_select = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][2]//div[text() = 'List']")
+        self.category_list_input = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1'][2]//li[@class = 'cdx-list__item']")
+        self.category_url_key_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-url_key']")
+        self.category_meta_title_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-meta_title']")
+        self.category_meta_des_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//div[@class = 'form-field undefined']//textarea")
+        self.category_upload_image = (By.XPATH, "//div[contains(@class,'uploader')]//input[@type='file']")
+        self.category_uploaded_image = (By.XPATH, "//div[@class = 'uploader grid-item']")
+        self.add_categry_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
+        self.edit_category_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
+        self.category_table = (By.XPATH, "//table//tr//td[2]//a")
+
+
+
+
+
         
         # Products Page Locators
         self.products_menu = (By.XPATH, "//li[@class='root-nav-item nav-item']//a[@href='https://e2e.evershop.app/admin/products']")
@@ -56,6 +85,7 @@ class BaseLocator:
         self.product_des_rawhtml_select = (By.XPATH, "//div[@class='column p-3 md:col-span-2']//div[text() = 'Raw HTML']")
         self.product_rawhtml_input = (By.XPATH, "//div[@class='column p-3 md:col-span-2']//div[@class = 'cdx-block ce-rawtool']//textarea")
         self.product_upload_image = (By.XPATH, "//div[contains(@class,'uploader')]//input[@type='file']")
+        self.product_uploaded_image = (By.XPATH, "//div[@class = 'image grid-item first-item']")
         self.product_url_key_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-url_key']")
         self.product_meta_title_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-meta_title']")
         self.product_meta_des_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//div[@class = 'form-field undefined']//textarea")
@@ -64,21 +94,10 @@ class BaseLocator:
         self.product_color_list = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']")
         self.product_color_option = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']//option[text() = 'White']")
         self.add_product_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
-        
+        self.edit_product_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
+        self.product_table = (By.XPATH, "//tbody/tr/td[3]//a")
 
-        self.cancel_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button danger outline']")
-        self.collection_created_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]//div[text()= 'Collection created successfully!']")
-        self.collection_edit_header = (By.XPATH, "//h1[@class = 'page-heading-title']")
-        self.edit_collection_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
-        self.collection_table = (By.XPATH, "//tbody/tr/td[3]//a")
-        self.collection_rows = (By.XPATH, "//tbody/tr")
-        self.collection_cell = (By.XPATH, "//./td[3]")
-        self.collection_checkbox = (By.XPATH, "//./td[1]//input[@type='checkbox']")
-        self.collection_del_btn = (By.XPATH, "//div[contains(@class, 'border border-divider')]//span[text()= 'Delete']")
-        self.collection_confirm_del_btn = (By.XPATH, "//div[contains(@class, 'flex justify-end space-x-2')]//button[@class = 'button critical']//span[text() = 'Delete']")
-
-        
-
+       
 
 
 

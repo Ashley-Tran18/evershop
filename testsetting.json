@@ -15,7 +15,7 @@
     "collection_code": "colection_code_11",
     "collection_des": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
 },
-"product_data": 
+"product_data":
     {
         "product_name": "Sofa Luxury Set",
         "product_sku": "SKU0001",
@@ -27,6 +27,13 @@
         "product_url_key": "sofa-luxury-set-0001",
         "product_meta_title": "Sofa Luxury Set",
         "product_meta_description": "product meta description Sofa Luxury Set"
-    }
-
+    },
+"category_data":{
+    "category_name": "Furniture",
+    "category_description": "Furniture is categorized by function, such as seating (chairs, sofas), sleeping (beds, futons), storage (cabinets, bookshelves), and tables/desks, or by location, like living room, bedroom, or outdoor. ",
+    "category_image":"furniture.png",
+    "category_url_key": "furniture",
+    "category_meta_title": "Furniture",
+    "category_meta_description": "category meta description"
+}
 }

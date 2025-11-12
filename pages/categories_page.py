@@ -1,119 +1,88 @@
-# from selenium.webdriver.common.by import By
-# from base.base_page import BasePage
-# from base.base_locator import BaseLocator
-# from utils.config_reader import ConfigReader
-# from pages.login_page import LoginPage
-# from time import sleep
+from selenium.webdriver.common.by import By
+from base.base_page import BasePage
+from base.base_locator import BaseLocator
+from utils.config_reader import ConfigReader
+from pages.login_page import LoginPage
+from time import sleep
 
 
-# class CategoriesPage(BasePage, BaseLocator):
-#     def __init__(self, driver):
-#         super().__init__(driver)
-#         BaseLocator.__init__(self, driver)
+class CategoriesPage(BasePage, BaseLocator):
+    def __init__(self, driver):
+        super().__init__(driver)
+        BaseLocator.__init__(self, driver)
 
-#     def get_cookie(self):
-#         "Step 1: Login to the website"
-#         login_page = LoginPage(self.driver) 
-#         login_page.login(*ConfigReader.get_email_password()) 
+    def get_cookie(self):
+        "Step 1: Login to the website"
+        login_page = LoginPage(self.driver) 
+        login_page.login(*ConfigReader.get_email_password()) 
 
-#     def navigate_to_collections_page(self):
-#         "Step 2: Navigate to Collections page"
-#         self.wait_and_click(self.collections_menu)
+    def navigate_to_categories_page(self):
+        "Step 2: Navigate to Collections page"
+        self.wait_and_click(self.categories_menu)
+        self.driver.save_screenshot("navigate_to_category_page_success.png")
 
-#     def create_new_collection(self):
-#         "Step 3: Create a new Collection"
-#         self.wait_and_click(self.new_collections_btn)    
+    def create_new_category(self):
+        "Step 3: Create a new Category"
+        self.wait_and_click(self.new_category_btn)    
 
-#     def add_collection_data_and_submit(self, collection_data):
-#         "Step 4: Add collection data & submit"
-#         collection_data = ConfigReader.get_collection_data()
-#         collection_name = collection_data['collection_name']
-#         collection_code = collection_data['collection_code']
-#         collection_des = collection_data['collection_des']
-            
-#         # fill form
-#         self.send_keys(self.collection_name_input, collection_name)
-#         self.send_keys(self.collection_code_input, collection_code)
-#         self.wait_and_click(self.collection_des_type)
-#         self.send_keys(self.collection_des_input, collection_des)
-#         sleep(1)
-    
-#         # submit
-#         self.wait_and_click(self.add_collection_btn)
-   
-#     # def verify_collection_created_successfully(self):
-#     """Verify the collection created successfully"""
-#     """Show toast message"""
-#     #     sleep(1)
-#     #     return self.wait_for_element_visible(self.collection_created_msg)
+    def add_category_data_and_submit(self, category_data):
+        "Step 4: Add collection data & submit"
+        category_data = ConfigReader.get_category_data()
+        category_name = category_data['category_name']
+        category_des = category_data['category_description']
+        category_image = category_data['category_image']
+        category_url_key = category_data['category_url_key']
+        category_meta_title = category_data['category_meta_title']
+        category_meta_des = category_data['category_meta_description']
+        
 
-#     """Or redirect to edit page"""
-#     def verify_redirect_to_collection_edit_page(self):
-#         sleep(2)
-#         assert "edit" in self.driver.current_url.lower()
+        # fill form
+        self.send_keys(self.category_name_input, category_name)
+        
+        # select & fill heading description
+        self.wait_and_click(self.category_des_type)
+        self.wait_and_click(self.category_available_block_1)
+        self.wait_and_click(self.category_des_type_plus_1)
+        self.wait_and_click(self.category_des_heading_select)
+        self.send_keys(self.category_heading_input, category_des)
+        
+        # select & fill list description
+        self.wait_and_click(self.category_available_block_2)
+        self.wait_and_click(self.category_des_type_plus_2)
+        self.wait_and_click(self.category_des_list_select)
+        self.send_keys(self.category_list_input, category_des)
+        
+        # upload image
+        self.upload_image(
+            self.category_upload_image,
+            self.category_uploaded_image,
+            category_image
+        )
 
-#     "Step 4: Back to the Collection listing page"
-#     def back_to_collection_page(self):
-#         self.wait_and_click(self.edit_collection_back_btn)
+        # fill search engine optimize
+        self.send_keys(self.category_url_key_input, category_url_key)
+        self.send_keys(self.category_meta_title_input, category_meta_title)
+        self.send_keys(self.category_meta_des_input, category_meta_des)
+        
+        # submit
+        self.wait_and_click(self.add_categry_btn)
+        
+    def verify_category_created_successfully(self):
+        """ Verify the category created successfully"""
+        self.wait_for_page_ready_after_submit(
+            toast_text="Category created successfully",
+            expected_url_part="/categories/edits"
+        )
 
-#         """ Verify the newly collection added"""
-#     def verify_new_collection_added(self, expected_name):
-#         # Get collection expected_name from file data.json
-#         expected_name = ConfigReader.get_collection_data()['collection_name']
+    def verify_new_category_added(self, expected_name):
+        "Back to the category listing page"
+        self.wait_and_click(self.edit_category_back_btn)
 
-#         # Get all collection names displays on table
-#         elements = self.find_elements((self.collection_table))
-#         collection_names = [el.text.strip() for el in elements if el.text.strip()]
-#         # print(f"Newly Collection added: {expected_name}" )
+        """ Verify the newly category added"""
+        expected_name = ConfigReader.get_category_data()['category_name']
+        print(f"🔍 Verifying new category: {expected_name}")
+        return self.verify_record_added(expected_name, self.category_table)
+
        
-#         # Compare, ignore sensitive cases(upper/lower)
-#         for name in collection_names:
-#             if name.lower() == expected_name.lower():
-#                 print(f"✅ Found new collection '{expected_name}' in table!")
-#                 return True
-            
-#         raise AssertionError(f"❌ Collection '{expected_name}' not found in table. Got: {collection_names}")
-        
-#     """Delete new collection"""
-#     def del_collection(self):
-#         expected_name = ConfigReader.get_collection_data()['collection_name']
-#         print(f"Expected name is {expected_name}")
 
-#         rows = self.find_elements((self.collection_rows))
-        
-#         for row in rows: 
-#                 # Get column 3rd of collection name
-#             name_cell = row.find_element(*self.collection_cell)
-#             name_text = name_cell.text.strip()
-
-#             if name_text == expected_name:
-#                 print(f"🔥 Found matching collection: {name_text}")
-                
-#                     # Get exact checkbox of current row
-#                 check_box = row.find_element(*self.collection_checkbox)
-#                 self.driver.execute_script("arguments[0].click();", check_box)
-#                 print("✅ Checkbox selected for deletion")
-
-#                     # Click Delect
-#                 self.click(self.collection_del_btn)
-#                 print("🗑️ Clicked Delete button")
-                
-#                     # Confirm popup Delete
-#                 try:
-#                     self.click(self.collection_confirm_del_btn)
-#                     print("🔴 Confirmed Delete")
-#                     sleep(2)
-#                 except:
-#                     print("⚠️ No confirmation popup found")
-#                 return
-#         else:
-#             raise Exception(f"❌ Collection name not found: {expected_name}")
-        
-            
-
-                
-
-
-
-
-
+   
