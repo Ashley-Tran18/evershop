@@ -6,7 +6,7 @@ from pages.login_page import LoginPage
 from time import sleep
 
 
-class CategoriesPage(BasePage, BaseLocator):
+class AttributesPage(BasePage, BaseLocator):
     def __init__(self, driver):
         super().__init__(driver)
         BaseLocator.__init__(self, driver)
@@ -16,14 +16,14 @@ class CategoriesPage(BasePage, BaseLocator):
         login_page = LoginPage(self.driver) 
         login_page.login(*ConfigReader.get_email_password()) 
 
-    def navigate_to_categories_page(self):
-        "Step 2: Navigate to Collections page"
-        self.wait_and_click(self.categories_menu)
-        self.driver.save_screenshot("navigate_to_category_page_success.png")
+    def navigate_to_attributes_page(self):
+        "Step 2: Navigate to Attributes page"
+        self.wait_and_click(self.attributes_menu)
+        self.driver.save_screenshot("navigate_to_attributes_page_success.png")
 
-    def create_new_category(self):
+    def create_new_attribute(self):
         "Step 3: Create a new Category"
-        self.wait_and_click(self.new_category_btn)    
+        self.wait_and_click(self.new_attribute_btn)    
 
     def add_category_data_and_submit(self, category_data):
         "Step 4: Add collection data & submit"
