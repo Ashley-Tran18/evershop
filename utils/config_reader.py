@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 
 class ConfigReader:
     _config = None
@@ -18,7 +19,11 @@ class ConfigReader:
         return ConfigReader.load_config()['base_url']
     
     @staticmethod
-    def get_timeout():
+    def get_dashboard_url():
+        return ConfigReader.load_config()["dashboard_url"]
+    
+    @staticmethod
+    def get_timeout() -> int:
         return int(ConfigReader.load_config()['timeout'])
 
     @staticmethod
@@ -27,28 +32,21 @@ class ConfigReader:
         return config['email'], config['password']
 
     @staticmethod
-    def get_credentials():
-        return ConfigReader.load_config()['credentials']
-
+    def get_credentials(key):
+        """
+        Get email/password following key in test_data
+        key example: "invalid_user", "invalid_password", "invalid_email_format", "blank"
+        """
+        config = ConfigReader.load_config()
+        data = config.get(key, {})
+        email = data.get("email", "")
+        password = data.get("password", "")
+        return email, password
+    
     @staticmethod
-    def get_login_attempts():
-        """
-        Trả về danh sách các attempt (invalid + valid login)
-        lấy từ credentials trong file config.
-        """
-        creds = ConfigReader.get_credentials()
-
-        attempts = [
-            {
-                "email": creds["invalid_email"],
-                "password": creds["invalid_password"],
-            },
-            {
-                "email": creds["email"],
-                "password": creds["password"],
-            }
-        ]
-        return attempts
+    def get_error_message(key: str):
+        config = ConfigReader.load_config()
+        return config["error_messages"][key]
 
     @staticmethod
     def get_collection_data():

@@ -3,14 +3,38 @@
   "timeout": "30",
   "email": "admin@e2eevershop.com",
   "password": "A0F4IQUHPvgOsZ44",
- 
- "credentials":{
-    "invalid_email": "admin@e2eevershop.com",
-    "invalid_password": "A0F4IQUHPvgOs41",
+  
+  "invalid_user": {
+    "email": "wrong@evershop.io",
+    "password": "wrongpass"
+  },
+  "invalid_password": {
     "email": "admin@e2eevershop.com",
+    "password": "wrongpass"
+  },
+  "invalid_email_format": {
+    "email": "admin",
     "password": "A0F4IQUHPvgOsZ44"
-},
-"collection_data": {
+  },
+  "blank": {
+    "email": "",
+    "password": ""
+  },
+  "placeholders": {
+    "email": "Email",
+    "password": "Password"
+  },
+  "error_messages": {
+    "invalid_credentials": "Invalid email or password",
+    "email_required": "Email is required",
+    "password_required": "Password is required",
+    "email_format_error": "Please enter a valid email address"
+  },
+
+
+
+  
+  "collection_data": {
     "collection_name": "collection test 11",
     "collection_code": "colection_code_11",
     "collection_des": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."

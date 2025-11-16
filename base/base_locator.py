@@ -13,9 +13,7 @@ class BaseLocator:
         self.edit_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
         
         # Login Page Locators
-        self.email_input = (By.XPATH, "//div[@class = 'form-field']//input[@id = 'field-email']")
-        self.password_input = (By.XPATH, "//div[@class = 'form-field']//input[@id = 'field-password']")
-        self.login_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button")
+        
         self.dashboard_header = (By.XPATH, "//h1[@class = 'page-heading-title']")
         self.login_error_message = (By.XPATH, "//div[@class = 'Toastify']//div[@class = 'Toastify__toast-body']")
 

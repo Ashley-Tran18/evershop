@@ -1,3 +1,4 @@
+# conftest.py
 import pytest
 import allure
 
@@ -24,3 +25,4 @@ def pytest_exception_interact(node, call, report):
             )
         except Exception as e:
             print(f"[!] Cannot capture screenshot: {e}")
+

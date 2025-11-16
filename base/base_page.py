@@ -1,214 +1,172 @@
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from utils.config_reader import ConfigReader
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.action_chains import ActionChains
-from base.base_locator import BaseLocator
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
+# base/base_page.py
 import os
+import time
+import allure
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from utils.config_reader import ConfigReader
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 class BasePage:
+    """
+    Core page-object foundation.
+    All page classes inherit from this.
+    """
+    # ------------------------------------------------------------------ #
+    # INITIALISATION
+    # ------------------------------------------------------------------ #
     def __init__(self, driver):
         self.driver = driver    
         self.timeout = ConfigReader.get_timeout()
+        self.wait = WebDriverWait(driver, self.timeout)
         self.actions = ActionChains(driver)
-        BaseLocator.__init__(self, driver)
+       
+    # ------------------------------------------------------------------ #
+    # NAVIGATION
+    # ------------------------------------------------------------------ #
+    @allure.step("Navigate to {url}")
+    def navigate_to(self, url:str = None):
+        """Open URL. If None → use base_url from config."""
+        url =  ConfigReader.get_base_url()
+        self.driver.get(url)
 
-     
-    def find_element(self, locator):
-        return WebDriverWait(self.driver, self.timeout).until(
-            lambda d: d.find_element(locator)
-        )
-    
-    def find_elements(self, locator):
-        return WebDriverWait(self.driver, self.timeout).until(
-            lambda d: d.find_elements(*locator)
+    @allure.step("Refresh current page")   
+    def refresh(self):
+        self.driver.refresh()
+
+    # ------------------------------------------------------------------ #
+    # WAITS & ELEMENT FINDERS
+    # ------------------------------------------------------------------ #
+    @allure.step("Wait for visibility of {locator}")
+    def wait_for_visible(self, locator, timeout: int = None):
+        return WebDriverWait(self.driver, timeout or self.timeout).until(
+            EC.visibility_of_element_located(locator)
         )
 
-    def click(self, locator):
-        element = WebDriverWait(self.driver, self.timeout).until(
+    @allure.step("Wait for clickable of {locator}")
+    def wait_for_clickable(self, locator, timeout: int = None):
+        return WebDriverWait(self.driver, timeout or self.timeout).until(
             EC.element_to_be_clickable(locator)
         )
-        element.click()
     
-    def send_keys(self, locator, text):
-        self.wait_for_element_visible(locator).clear()
-        self.wait_for_element_visible(locator).send_keys(text)
-    
-    def get_text(self, locator):
-        return self.presence_of_element(locator).text
-    
-    def wait_for_element_visible(self, locator, timeout=None):
-        timeout = timeout or self.timeout
-        return WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
-    
-    def wait_and_click(self, locator, timeout = None):
-        timeout = timeout or self.timeout
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
-        element.click()
-
-    def wait_and_find_elements(self, locator, timeout=None):
-        timeout = timeout or self.timeout
-        # chờ element hiển thị rồi trả về element
-        return WebDriverWait(self.driver, timeout).until(EC.presence_of_all_elements_located(locator))
-
-    # Hàm Select
-    def select_dropdown_by_text(self, select_locator, visible_text):
-        select_element = self.find_element(*select_locator)
-        select = Select(select_element)
-        select.select_by_visible_text(visible_text)
-
-    def verify_text(self, locator, expected_text):
-        element = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(locator)
-        )
-        actual_text = element.text.strip()
-        assert actual_text == expected_text, f"Expected '{expected_text}' but got '{actual_text}'"
-
-    def get_error_message(self, locator):
-        # wait for error message to be visible and return its text
-        try:
-            error_element = WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(locator)
-            )
-            return error_element.text
-        except TimeoutException:
-            return False
-    
-    def presence_of_element(self, locator, timeout=None):
-        timeout = timeout or self.timeout
-        return WebDriverWait(self.driver, timeout).until(
+    @allure.step("Wait for presence of {locator}")
+    def wait_for_presence(self, locator, timeout: int = None):
+        return WebDriverWait(self.driver, timeout or self.timeout).until(
             EC.presence_of_element_located(locator)
         )
-
     
-    def wait_for_upload_complete(self, locator_done, timeout=None):
-        timeout = timeout or self.timeout
+
+    @allure.step("Find element {locator}")
+    def find_element(self, locator, timeout: int = None):
+        """Return visible element."""
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(locator_done)
-            )
-            print("✅ Upload complete")
-        except TimeoutException:
-            print("⚠️ Upload may not have completed in time")
-
-    def upload_image(self, upload_input_locator, uploaded_image_locator, image_name):
-        """
-        Upload 1 ảnh và chờ upload hoàn tất.
-        - upload_input_locator: locator của thẻ <input type='file'>
-        - uploaded_image_locator: locator của thumbnail / preview sau khi upload
-        - image_name: tên file ảnh (VD: "sofa.png") nằm trong thư mục /images
-        """
-
-        try:
-            base = os.path.abspath("images")
-            full_path = os.path.join(base, image_name)
-
-            # Tìm input upload và gửi đường dẫn file
-            upload_input = self.presence_of_element(upload_input_locator)
-            upload_input.send_keys(full_path)
-            print(f"📤 Uploading image: {image_name}")
-
-            # Chờ ảnh upload hoàn tất (thumbnail hiển thị)
-            WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located(uploaded_image_locator)
-            )
-            print("✅ Upload completed successfully!")
-            
-
-        except TimeoutException:
-            print("⚠️ Upload may not have completed in time.")
-        except Exception as e:
-            print(f"❌ Upload failed: {str(e)}")
-
-
-    def hover_to_element(self, locator):
-        """Hover đến element bằng locator"""
-        element = self.wait_for_element_visible(locator)
-        self.actions.move_to_element(element).perform()
-        return element  # Trả về element để dùng tiếp nếu cần
-
-    def click_with_hover(self, hover_locator, click_locator):
-        """Hover đến phần tử cha, rồi click phần tử con"""
-        self.hover_to_element(hover_locator)
-        element_to_click = self.wait_for_element_visible(click_locator)
-        self.actions.move_to_element(element_to_click).click().perform()
-
-    def reset_actions(self):
-        """Reset chuỗi hành động (nếu cần dùng lại sạch)"""
-        self.actions = ActionChains(self.driver)
-
-    # --- Hàm chờ trang load cơ bản ---
-    def wait_for_page_loaded(self, timeout=None):
-        timeout = timeout or self.timeout
-        try:
-            WebDriverWait(self.driver, timeout).until(
-                lambda d: d.execute_script("return document.readyState") == "complete"
-            )
-        except TimeoutException:
-            print("⚠️ Warning: Page did not finish loading within timeout")
-
-    # --- Hàm chờ sau khi Submit ---
-    def wait_for_page_ready_after_submit(self, expected_url_part=None, toast_text=None, timeout=None):
-        """
-        Chờ redirect + verify toast message sau khi click Submit
-        """
-        timeout = timeout or self.timeout
-        wait = WebDriverWait(self.driver, timeout)
-
-        try:
-            # 1️⃣ Chờ toast message xuất hiện
-            # ✅ dùng self.toast_msg (được định nghĩa ở page con)
-            # toast_locator = getattr(self, "toast_msg", None)
-            toast_locator = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]")
-            if toast_text and toast_locator:
-                wait.until(EC.visibility_of_element_located(toast_locator))
-                toast_el = self.presence_of_element(toast_locator)
-                if toast_text.lower() in toast_el.text.lower():
-                    print(f"✅ Toast appeared: '{toast_el.text}'")
-                    self.driver.save_screenshot("toast msg.png")
+            return self.wait_for_visible(locator, timeout)
+        except TimeoutException as e:
+            self._screenshot(f"find_fail_{locator}")
+            raise TimeoutException(f"Element not visible: {locator}") from e
         
-                else:
-                    print(f"⚠️ Toast text didn't match: '{toast_el.text}'")
-            
-            # 2️⃣ Chờ URL thay đổi (redirect)
-            if expected_url_part:
-                wait.until(EC.url_contains(expected_url_part))
-                print(f"✅ Redirected to URL containing: {expected_url_part}")
-                self.driver.save_screenshot("edit page.png")
-
-            # 3️⃣ Đảm bảo DOM đã hoàn tất
-            self.wait_for_page_loaded(timeout)
-
-            print("🎯 Page is fully ready after submit")
-
+    @allure.step("Find all element {locator}")
+    def find_elements(self, locator, timeout: int = None):
+        """Return list of present elements (may be empty)."""
+        try:
+            WebDriverWait(self.driver, timeout or self.timeout).until(
+                EC.presence_of_all_elements_located(locator)
+            )
+            return self.driver.find_elements(*locator)
         except TimeoutException:
-            print("⚠️ Timeout: Page did not finish loading or toast not found")
+            return []
 
+    # ------------------------------------------------------------------ #
+    # INTERACTIONS
+    # ------------------------------------------------------------------ #
+    @allure.step("Click {locator}")
+    def click(self, locator, timeout: int = None):
+        try:
+            element = WebDriverWait(self.driver, timeout or self.timeout).until(
+                EC.element_to_be_clickable(locator)
+            )
+            element.click()
+            self._screenshot(f"clicked_{locator}")
+        except TimeoutException:
+            self._screenshot(f"click_fail_{locator}")
+            raise
 
-
-    # ✅ Hàm verify chung cho mọi table (product, collection, v.v.)
-    def verify_record_added(self, expected_name, table_locator):
-        """
-        Verify that a record (product, collection, etc.) with given name
-        exists in the displayed table.
-        """
-        elements = self.find_elements(table_locator)
-        record_names = [el.text.strip() for el in elements if el.text.strip()]
-
-        for name in record_names:
-            if name.lower() == expected_name.lower():
-                print(f"✅ Found new record '{expected_name}' in table!")
-                return True
-
-        raise AssertionError(
-            f"❌ Record '{expected_name}' not found in table. Got: {record_names}"
-        )
+    @allure.step("Type '{text}' into {locator}")
+    def send_keys(self, locator, text:str):
+        el = self.wait_for_visible(locator)
+        el.clear()
+        el.send_keys(text)
     
+    @allure.step("Get text of {locator}")
+    def get_text(self, locator):
+        return self.wait_for_visible(locator).text.strip()
+    
+    def assert_text_contains(self, locator, expected_text):
+        assert expected_text in self.get_text(locator), \
+            f"❌ Expected '{expected_text}' in '{self.get_text(locator)}'"
 
+    
+    @allure.step("Get attribute '{attr}' of {locator}")
+    def get_attribute(self, locator, attr:str):
+        return self.wait_for_visible(locator).get_attribute(attr)
+    
+    @allure.step("Is {locator} visible?")
+    def is_visible(self, locator, timeout:int = 3) -> bool:
+        try:
+            return self.wait_for_visible(locator, timeout).is_displayed()
+        except TimeoutException:
+            return False
+        
+    @allure.step("Is {locator} enabled?")
+    def is_enabled(self, locator) -> bool:
+        return self.wait_for_visible(locator).is_enabled()
+    
+    @allure.step("Is {locator} displayed?")
+    def is_displayed(self, locator):
+        return self.find_element(locator).is_displayed()
+    
+    @allure.step("Wait for {locator} url")
+    # def wait_for_url_contains(self, text, timeout=None):
+    #     try:
+    #         WebDriverWait(self.driver, timeout or self.timeout).until(
+    #             EC.url_contains(text)
+    #         )
+    #     except:
+    #         raise AssertionError(f"URL does not contain: {text}")
+    def wait_for_url_contains(self, text, timeout=10):
+        WebDriverWait(self.driver, timeout).until(
+            EC.url_contains(text)
+        )
 
+    def focus_login_button_with_tab(self, tab_count=3):
+        actions = ActionChains(self.driver)
+        for _ in range(tab_count):
+            actions.send_keys(Keys.TAB)
+        actions.perform()
+
+    @allure.step("take screenshot")
+    def _screenshot(self, name):
+        os.makedirs("screenshots", exist_ok=True)
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        path = f"screenshots/{name}_{timestamp}.png"
+        self.driver.save_screenshot(path)
+        allure.attach.file(path, name=f"screenshot_{name}", attachment_type=allure.attachment_type.PNG)
+    
+    # ------------------------------------------------------------------ #
+    # DROPDOWN (Select)
+    # ------------------------------------------------------------------ #
+    @allure.step("Select '{option}' by visible text in dropdown {locator}")
+    def select_by_visible_text(self, locator, option: str):
+        Select(self.wait_for_visible(locator)).select_by_visible_text(option)
+
+    @allure.step("Select value='{value}' in dropdown {locator}")
+    def select_by_value(self, locator, value:str):
+        Select(self.wait_for_visible(locator)).select_by_value(value)
+
+    @allure.step("Select index={index} in dropdown {locator}")
+    def select_by_index(self, locator, index:int):
+        Select(self.wait_for_visible(locator)).select_by_index(index)
