@@ -12,7 +12,6 @@ class TestProducts(BaseTest):
         "Step 1: Login to the website"
         product = ProductsPage(self.driver)
         product.get_cookie()
-        # BaseLocator.__init__(self.driver)
 
         "Step 2: Navigate to Products page"
         product.navigate_to_products_page()

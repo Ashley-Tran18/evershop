@@ -1,7 +1,7 @@
 # base_test.py
 from selenium import webdriver
 from utils.config_reader import ConfigReader
-from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import pytest
@@ -15,8 +15,6 @@ class BaseTest:
         
         options = Options()
         options.add_argument("--start-maximized")
-        service = ChromeService(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=service, options=options)
         
         options.add_argument("--incognito")
         prefs = {
@@ -28,11 +26,10 @@ class BaseTest:
         # options.add_argument('--headless')
         # options.add_argument('--no-sandbox')
         # options.add_argument('--disable-dev-shm-usage')
-        # self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         
         base_url = ConfigReader.get_base_url()
         self.driver.get(base_url)
-        # self.driver.maximize_window()
 
         # Cho phép các class test kế thừa sử dụng driver
         request.cls.driver = self.driver

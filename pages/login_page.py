@@ -11,7 +11,6 @@ from time import sleep
 class LoginPage(BasePage, BaseLocator):
     def __init__(self, driver):
         super().__init__(driver)
-        # BasePage.__init__(self, driver)
         BaseLocator.__init__(self, driver)
 
         # Locator
@@ -22,7 +21,7 @@ class LoginPage(BasePage, BaseLocator):
         self.email_error = (By.XPATH, "//p[@id = 'field-email-error']")
         self.password_error = (By.XPATH, "//p[@id = 'field-password-error']")
         self.eye_password_icon = (By.XPATH, "//button[@class = 'text-gray-400 hover:text-gray-600 transition-colors']")
-        self.dashboard_title = (By.XPATH, "//h1[@class = 'page-heading-title']")
+        self.dashboard_title = (By.XPATH, "//div[@class = 'flex justify-start space-x-2 items-center']")
         self.avatar_icon = (By.XPATH, "//div[@class = 'flex justify-items-start gap-2 justify-center']")
         self.logout_btn = (By.XPATH, "//div[@class = 'mt-2']//a[text() = 'Logout']")
         self.admin_dropdown = (By.XPATH, "//div[@class = 'logout bg-background shadow p-5']")
@@ -70,6 +69,7 @@ class LoginPage(BasePage, BaseLocator):
         self.wait_for_presence(self.admin_dropdown)
         logout_btn = self.wait_for_visible(self.logout_btn)
         logout_btn.click()
+        self.wait_for_presence(self.login_btn)
 
     
     def is_error_message_displayed(self):
@@ -115,9 +115,19 @@ class LoginPage(BasePage, BaseLocator):
         return self.is_enabled(self.login_btn)
 
     def wait_for_dashboard(self):
-        # dashboard_url = ConfigReader.get_base_url().rstrip("/") + ConfigReader.get_base_url()
-        # self.wait_for_url_contains(dashboard_url)
-        self.assert_text_contains(self.dashboard_title, "Dashboard")
+        # ví dụ chờ element xuất hiện
+        self.wait_for_visible(self.dashboard_title)
+    
+    def get_dashboard_title_text(self):
+        # * để unpack tuple thành (By, locator)
+        return self.find_element(self.dashboard_title).text
+
+    # def wait_for_dashboard(self):
+    #     # dashboard_url = ConfigReader.get_base_url().rstrip("/") + ConfigReader.get_base_url()
+    #     # self.wait_for_url_contains(dashboard_url)
+    #     self.assert_text_contains(self.dashboard_title, "Dashboard")
+    #     print(type(self.dashboard_title))
+    #     print(self.dashboard_title)
 
     def get_current_url(self):
         return self.driver.current_url
