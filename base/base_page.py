@@ -9,6 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from utils.config_reader import ConfigReader
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 
 class BasePage:
@@ -141,12 +142,6 @@ class BasePage:
         WebDriverWait(self.driver, timeout).until(
             EC.url_contains(text)
         )
-
-    def focus_login_button_with_tab(self, tab_count=3):
-        actions = ActionChains(self.driver)
-        for _ in range(tab_count):
-            actions.send_keys(Keys.TAB)
-        actions.perform()
 
     @allure.step("take screenshot")
     def _screenshot(self, name):

@@ -58,8 +58,9 @@ class LoginPage(BasePage, BaseLocator):
         self.enter_email(email)
         self.enter_password(password)
         if use_enter:
-            self.find_element(self.login_btn)
-            self.press_enter_on_password()
+            login_button = self.wait_for_presence(self.login_btn)
+            login_button.send_keys(Keys.ENTER)
+            # self.press_enter_on_password()
         else:
             self.click_sign_in()
 

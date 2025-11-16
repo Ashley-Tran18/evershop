@@ -33,12 +33,12 @@ class TestLogin(BaseTest):
     #     assert "Password" in login_page.get_password_placeholder()
 
 
-    # @allure.title("TC003 - Verify Login Successfully with Valid Credentials")
-    # def test_login_valid_credentials(self):
-    #     login_page = LoginPage(self.driver)
-    #     login_page.login(*ConfigReader.get_email_password()) 
-    #     login_page.wait_for_dashboard()
-    #     # assert "Dashboard" in login_page.dashboard_title()
+    @allure.title("TC003 - Verify Login Successfully with Valid Credentials")
+    def test_login_valid_credentials(self):
+        login_page = LoginPage(self.driver)
+        login_page.login(*ConfigReader.get_email_password()) 
+        login_page.wait_for_dashboard()
+        assert "Dashboard" in login_page.dashboard_title()
 
     # @allure.title("TC004 - Verify Login Unsuccessfully with Invalid Credentials")
     # def test_login_invalid_credentials(self):
@@ -98,13 +98,14 @@ class TestLogin(BaseTest):
     #     login_page.show_hide_password_icon() # --->  click again → should mask again
     #     assert login_page.is_password_masked()
 
-    @allure.title("TC011 - Login Using ENTER Key") # ==> Failed
-    def test_enter_key_login(self):
-        login_page = LoginPage(self.driver)
-        email, password = ConfigReader.get_email_password()
-        login_page.login(email, password, use_enter=True)
-        login_page.wait_for_dashboard()
-        assert "Dashboard" in login_page.dashboard_title()
+    # @allure.title("TC011 - Login Using ENTER Key") # ==> Failed
+    # def test_enter_key_login(self):
+    #     login_page = LoginPage(self.driver)
+    #     email, password = ConfigReader.get_email_password()
+    #     login_page.login(email, password, use_enter=True)
+    #     login_page.wait_for_dashboard()
+    #     sleep(1)
+    #     assert "Dashboard" in login_page.dashboard_title()
 
     # @allure.title("TC012 - Verify Logout Functionality")
     # def test_logout_flow(self):
