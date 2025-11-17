@@ -11,12 +11,8 @@ import os
 class ProductsPage(BasePage, BaseLocator):
     def __init__(self, driver):
         super().__init__(driver)
-        BaseLocator.__init__(self, driver)
 
-    def get_cookie(self):
-        "Step 1: Login to the website"
-        login_page = LoginPage(self.driver) 
-        login_page.login(*ConfigReader.get_email_password()) 
+    def 
 
     def navigate_to_products_page(self):
         "Step 2: Navigate to Collections page"
