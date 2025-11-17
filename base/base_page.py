@@ -165,3 +165,31 @@ class BasePage:
     @allure.step("Select index={index} in dropdown {locator}")
     def select_by_index(self, locator, index:int):
         Select(self.wait_for_visible(locator)).select_by_index(index)
+
+
+
+    # ------------------------------------------------------------------ #
+    # Hàm verify chung cho mọi table (product, collection, v.v.)
+    # ------------------------------------------------------------------ # 
+    def verify_record_added(self, expected_name, table_locator):
+        """
+        Verify that a record (product, collection, etc.) with given name
+        exists in the displayed table.
+        """
+        elements = self.find_elements(table_locator)
+        record_names = [el.text.strip() for el in elements if el.text.strip()]
+
+        for name in record_names:
+            if name.lower() == expected_name.lower():
+                print(f"✅ Found new record '{expected_name}' in table!")
+                return True
+
+        raise AssertionError(
+            f"❌ Record '{expected_name}' not found in table. Got: {record_names}"
+        )
+    
+
+    def wait_for_page_loaded(self, timeout=None):
+        WebDriverWait(self.driver, timeout or self.timeout).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )

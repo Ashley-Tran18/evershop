@@ -26,6 +26,7 @@ class LoginPage(BasePage, BaseLocator):
         self.logout_btn = (By.XPATH, "//div[@class = 'mt-2']//a[text() = 'Logout']")
         self.admin_dropdown = (By.XPATH, "//div[@class = 'logout bg-background shadow p-5']")
 
+
     def is_email_displayed(self):
         return self.is_displayed(self.email_input)
 

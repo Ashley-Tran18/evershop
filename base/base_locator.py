@@ -11,7 +11,7 @@ class BaseLocator:
         self.toast_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]")
         self.save_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
         self.edit_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
-        
+        self.del_btn = (By.XPATH, "//div[contains(@class, 'border border-divider')]//span[text()= 'Delete']")
         # Login Page Locators
         
         self.dashboard_header = (By.XPATH, "//h1[@class = 'page-heading-title']")
@@ -62,8 +62,7 @@ class BaseLocator:
 
 
         # Products Page Locators
-        self.products_menu = (By.XPATH, "//li[@class='root-nav-item nav-item']//a[@href='https://e2e.evershop.app/admin/products']")
-        self.new_product_btn = (By.XPATH, "//div[@class = 'flex justify-end space-x-2 items-center']//span[text() = 'New Product']")
+        
         self.product_name_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-name']")
         self.product_sku_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-sku']")
         self.product_price_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id='field-price']")
@@ -87,11 +86,10 @@ class BaseLocator:
         self.product_meta_des_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//div[@class = 'form-field undefined']//textarea")
         self.product_quantity_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id = 'field-qty']")
         self.product_des_input = (By.XPATH, "//div[contains(@class, 'row grid')]//div[@class = 'ce-paragraph cdx-block']")
-        self.product_color_list = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']")
-        self.product_color_option = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']//option[text() = 'White']")
+        
         self.add_product_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
         self.edit_product_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
-        self.product_table = (By.XPATH, "//tbody/tr/td[3]//a")
+        
 
        
 
