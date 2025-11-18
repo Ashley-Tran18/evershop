@@ -45,22 +45,44 @@ class TestProducts(BaseTest):
     #     assert "Create a new product" in product.get_create_product_title_text()
 
 
-    @allure.title("TC011 - Create Product with Minimal Fields") 
-    def test_create_product_minimal(self):
+    # @allure.title("TC011 - Create Product with required Fields") 
+    # def test_create_product_with_required_fields(self):
+    #     product = ProductsPage(self.driver)
+    #     product.login()
+    #     product.click_product_menu()
+    #     product.click_new_product()
+    #     product.wait_for_new_product_form()
+    #     product.fill_product_form(ConfigReader.get_product_data)
+    #     product.click_save_btn()
+    #     assert product.verify_product_created_successfully()
+    #     self.driver.save_screenshot("created_product.png")
+
+
+    # @allure.title("TC012 - Validation for Required Fields")
+    # def test_required_fields_validation(self):
+    #     product = ProductsPage(self.driver)
+    #     product.login()
+    #     product.click_product_menu()
+    #     product.click_new_product()
+    #     product.wait_for_new_product_form()
+    #     product.click_save_btn()
+    #     assert product.is_inline_error_message_displayed()
+    #     self.driver.save_screenshot("inline_error_msg.png")
+
+
+    @allure.title("TC013 - SKU Uniqueness Validation")
+    def test_sku_uniqueness(self):
         product = ProductsPage(self.driver)
         product.login()
         product.click_product_menu()
         product.click_new_product()
-        sleep(2)
-        # sku = f"TEST_{int(time.time())}"
+        product.wait_for_new_product_form()
         product.fill_product_form(ConfigReader.get_product_data)
-        sleep(3)
-        product.save_btn()
-        # assert product.is_success_displayed()
+        product.click_save_btn()
+        assert product.verify_sku_uniqueness()
+        self.driver.save_screenshot("sku_uniqueness.png")
 
 
-       
 
    
-        
-
+    

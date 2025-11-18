@@ -8,7 +8,8 @@ class BaseLocator:
 
 
         # General Locators
-        self.toast_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]")
+        # self.toast_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-container')]")
+        self.toast_msg = (By.XPATH, "//div[contains(@class, 'Toastify__toast-body')]")
         self.save_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
         self.edit_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
         self.del_btn = (By.XPATH, "//div[contains(@class, 'border border-divider')]//span[text()= 'Delete']")

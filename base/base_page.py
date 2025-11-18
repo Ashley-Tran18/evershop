@@ -193,3 +193,78 @@ class BasePage:
         WebDriverWait(self.driver, timeout or self.timeout).until(
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
+
+
+    # ======================================
+    # 1. Wait for Toast (locator passed from Page)
+    # ======================================
+    def wait_for_toast(self, toast_locator: tuple, expected_text: str, timeout=10):
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.text_to_be_present_in_element(toast_locator, expected_text)
+            )
+            return True
+        except Exception:
+            self.attach_screenshot("toast_not_found")
+            raise AssertionError(
+                f"❌ Toast message not found: '{expected_text}'"
+            )
+
+    # ======================================
+    # 2. Check toast success (locator passed from Page)
+    # ======================================
+    def is_success_displayed(self, toast_locator: tuple, expected_text: str) -> bool:
+        try:
+            el = self.driver.find_element(*toast_locator)
+            return expected_text.lower() in el.text.lower()
+        except Exception:
+            return False
+
+    # ======================================
+    # 3. Wait for page ready (toast + URL + spinner)
+    # ======================================
+    def wait_for_page_ready_after_submit(
+        self,
+        toast_locator: tuple,
+        toast_text: str,
+        # expected_url_part: str,
+        timeout=None
+    ):
+        # --- 1. Toast success message ---
+        timeout = timeout or self.timeout
+        try:
+            if toast_locator:
+                toast_el = self.find_element(toast_locator)
+                if toast_text:
+                    WebDriverWait(self.driver, self.timeout).until(
+                        lambda d: toast_text in toast_el.text
+                    )
+                return True
+        except Exception as e:
+            print(f"Page not ready: {e}")
+            return False
+
+        # # --- 2. URL change ---
+        # try:
+        #     WebDriverWait(self.driver, timeout).until(
+        #         EC.url_contains(expected_url_part)
+        #     )
+        # except Exception:
+        #     self.attach_screenshot("url_not_changed")
+        #     raise AssertionError(
+        #         f"❌ URL did not change to include: {expected_url_part}\n"
+        #         f"Current: {self.driver.current_url}"
+        #     )
+
+    # ======================================
+    # 4. Screenshot (Allure attach)
+    # ======================================
+    def attach_screenshot(self, name="screenshot"):
+        try:
+            allure.attach(
+                self.driver.get_screenshot_as_png(),
+                name=name,
+                attachment_type=allure.attachment_type.PNG
+            )
+        except:
+            pass

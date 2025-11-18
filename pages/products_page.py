@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep
 import allure
 import os
+import time
 
 
 class ProductsPage(BasePage, BaseLocator):
@@ -34,6 +35,9 @@ class ProductsPage(BasePage, BaseLocator):
         self.product_color_list = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']")
         self.product_color_option = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']//option[text() = 'White']")
     
+        self.inline_error_msg = (By.XPATH, "//p[@class = 'field-error']")
+
+
     @allure.title("Login Successfully with Valid Credentials")
     def login(self):
         login_page = LoginPage(self.driver)
@@ -74,10 +78,12 @@ class ProductsPage(BasePage, BaseLocator):
         product_data = ConfigReader.get_product_data()
         product_name = product_data['product_name']
         product_sku = product_data['product_sku']
+        # product_sku = f"TEST_{int(time.time())}"
         product_price = product_data['product_price']
         product_weight = product_data['product_weight']
         product_quantity = product_data['product_quantity']
         product_url_key = product_data['product_url_key']
+        # product_url_key =  f"{product_name.replace(' ', '-').lower()}-{int(time.time())}"
         product_meta_title = product_data['product_meta_title']
      
         # fill general form
@@ -96,15 +102,32 @@ class ProductsPage(BasePage, BaseLocator):
         self.click(self.product_color_option)
 
     @allure.step("Save product")
-    def save_btn(self):
+    def click_save_btn(self):
         self.click(self.save_btn)
-
 
     @allure.step("Check success message visible")
     def is_success_displayed(self):
-        self.is_displayed(self.toast_msg)
+        return self.is_displayed(self.toast_msg)
     
+    @allure.step("Check success message visible")
+    def is_inline_error_message_displayed(self):
+        return self.is_displayed(self.inline_error_msg)
 
+    @allure.step("Verify product created successfully")
+    def verify_product_created_successfully(self):
+        return self.wait_for_page_ready_after_submit(
+            toast_locator=self.toast_msg,
+            toast_text="Product created successfully",
+            expected_url_part="/products/edits"
+        )
+
+    @allure.step("Verify SKU Uniqueness Validation")
+    def verify_sku_uniqueness(self):
+        return self.wait_for_page_ready_after_submit(
+            toast_locator=self.toast_msg,
+            toast_text='Exception in middleware createProduct: duplicate key value violates unique constraint "PRODUCT_SKU_UNIQUE"'
+            # expected_url_part="/products/edits"
+        )
 
 
 
@@ -164,16 +187,6 @@ class ProductsPage(BasePage, BaseLocator):
 
 
         
-
-
-
-
-    # def verify_product_created_successfully(self):
-    #    """ Verify the product created successfully"""
-    #    self.wait_for_page_ready_after_submit(
-    #        toast_text="Product created successfully",
-    #        expected_url_part="/products/edits"
-    #    )
 
     # def back_to_product_page(self):
     #     "Back to the product listing page"
