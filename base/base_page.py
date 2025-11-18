@@ -221,16 +221,15 @@ class BasePage:
             return False
 
     # ======================================
-    # 3. Wait for page ready (toast + URL + spinner)
+    # 3. Wait for page ready (toast + URL)
     # ======================================
-    def wait_for_page_ready_after_submit(
+    # --- 3.1. Toast success message ---
+    def wait_for_toast_message(
         self,
         toast_locator: tuple,
         toast_text: str,
-        # expected_url_part: str,
         timeout=None
     ):
-        # --- 1. Toast success message ---
         timeout = timeout or self.timeout
         try:
             if toast_locator:
@@ -244,17 +243,26 @@ class BasePage:
             print(f"Page not ready: {e}")
             return False
 
-        # # --- 2. URL change ---
-        # try:
-        #     WebDriverWait(self.driver, timeout).until(
-        #         EC.url_contains(expected_url_part)
-        #     )
-        # except Exception:
-        #     self.attach_screenshot("url_not_changed")
-        #     raise AssertionError(
-        #         f"❌ URL did not change to include: {expected_url_part}\n"
-        #         f"Current: {self.driver.current_url}"
-        #     )
+       # --- 3.2. URL change --- 
+    def wait_for_redirect_edit_page(
+        self,
+        expected_url_part: str,
+        timeout=None
+    ):
+        timeout = timeout or self.timeout
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.url_contains(expected_url_part)
+            )
+            return True
+        except Exception:
+            
+            self.attach_screenshot("url_not_changed")
+            raise AssertionError(
+                f"❌ URL did not change to include: {expected_url_part}\n"
+                f"Current: {self.driver.current_url}"
+            )
+
 
     # ======================================
     # 4. Screenshot (Allure attach)

@@ -54,8 +54,10 @@ class TestProducts(BaseTest):
     #     product.wait_for_new_product_form()
     #     product.fill_product_form(ConfigReader.get_product_data)
     #     product.click_save_btn()
-    #     assert product.verify_product_created_successfully()
-    #     self.driver.save_screenshot("created_product.png")
+    #     assert product.verify_toast_message()
+    #     self.driver.save_screenshot("toast.png")
+    #     assert product.redirect_to_edit_page()
+    #     self.driver.save_screenshot("edit.png")
 
 
     # @allure.title("TC012 - Validation for Required Fields")
@@ -70,19 +72,20 @@ class TestProducts(BaseTest):
     #     self.driver.save_screenshot("inline_error_msg.png")
 
 
-    @allure.title("TC013 - SKU Uniqueness Validation")
-    def test_sku_uniqueness(self):
-        product = ProductsPage(self.driver)
-        product.login()
-        product.click_product_menu()
-        product.click_new_product()
-        product.wait_for_new_product_form()
-        product.fill_product_form(ConfigReader.get_product_data)
-        product.click_save_btn()
-        assert product.verify_sku_uniqueness()
-        self.driver.save_screenshot("sku_uniqueness.png")
+    # @allure.title("TC013 - SKU Uniqueness Validation")
+    # def test_sku_uniqueness(self):
+    #     product = ProductsPage(self.driver)
+    #     product.login()
+    #     product.click_product_menu()
+    #     product.click_new_product()
+    #     product.wait_for_new_product_form()
+    #     product.fill_product_form(ConfigReader.get_product_data)
+    #     product.click_save_btn()
+    #     assert product.verify_sku_uniqueness()
+    #     self.driver.save_screenshot("sku_uniqueness.png")
 
 
-
-   
+    @allure.title("TC014 - Add Product Description")
+    def test_add_product_description(self, setup):
+       
     

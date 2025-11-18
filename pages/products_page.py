@@ -114,16 +114,20 @@ class ProductsPage(BasePage, BaseLocator):
         return self.is_displayed(self.inline_error_msg)
 
     @allure.step("Verify product created successfully")
-    def verify_product_created_successfully(self):
-        return self.wait_for_page_ready_after_submit(
+    def verify_toast_message(self):
+        return self.wait_for_toast_message(
             toast_locator=self.toast_msg,
-            toast_text="Product created successfully",
-            expected_url_part="/products/edits"
+            toast_text="Product created successfully"
         )
+    
+    @allure.step("Verify redirect to edit page after submit")
+    def redirect_to_edit_page(self):
+        return self.wait_for_redirect_edit_page(
+            expected_url_part="/products/edit")
 
     @allure.step("Verify SKU Uniqueness Validation")
     def verify_sku_uniqueness(self):
-        return self.wait_for_page_ready_after_submit(
+        return self.wait_for_toast_message(
             toast_locator=self.toast_msg,
             toast_text='Exception in middleware createProduct: duplicate key value violates unique constraint "PRODUCT_SKU_UNIQUE"'
             # expected_url_part="/products/edits"
