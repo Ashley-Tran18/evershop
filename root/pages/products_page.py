@@ -130,7 +130,6 @@ class ProductsPage(BasePage, BaseLocator):
         return self.wait_for_toast_message(
             toast_locator=self.toast_msg,
             toast_text='Exception in middleware createProduct: duplicate key value violates unique constraint "PRODUCT_SKU_UNIQUE"'
-            # expected_url_part="/products/edits"
         )
 
 
