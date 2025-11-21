@@ -1,12 +1,140 @@
-name: Run Automation Tests
+# name: Run Automation Tests
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# permissions:
+#   contents: read
+#   pages: write
+#   id-token: write
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         suite:
+#           - tests/test_login.py
+#           - tests/test_products.py
+
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Install Chrome
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y google-chrome-stable
+         
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: "3.13"
+
+#       - name: Install dependencies
+#         run: |
+#           python3 -m pip install --upgrade pip
+#           pip3 install -r requirements.txt
+#           pip3 install allure-pytest
+
+#       - name: Run tests with pytest
+#         run: |
+#           pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q | tee pytest-output.txt
+#           echo "${PIPESTATUS[0]}" > exit-code.txt
+#         continue-on-error: true
+
+#       - name: Set safe artifact name
+#         id: sanitize
+#         run: echo "safe_name=$(echo '${{ matrix.suite }}' | tr '/' '_' | tr '.' '_')" >> $GITHUB_OUTPUT
+
+#       - name: Upload Allure Results
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: allure-results-${{ steps.sanitize.outputs.safe_name }}
+#           path: allure-results
+
+#       - name: Fail the job if pytest failed
+#         run: |
+#           exit_code=$(cat exit-code.txt)
+#           exit $exit_code
+#         if: always()
+
+#   generate-report:
+#     runs-on: ubuntu-latest
+#     needs: test
+#     if: always()
+#     outputs:
+#       report-dir: allure-report
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Install GitHub CLI and unzip
+#         run: sudo apt-get update && sudo apt-get install -y gh jq unzip
+
+#       - name: Download and merge allure results
+#         env:
+#           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           mkdir -p allure-results
+#           artifacts=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts --jq '.artifacts[].name' | grep '^allure-results-')
+
+#           echo "Merging artifacts:"
+#           echo "$artifacts"
+
+#           for name in $artifacts; do
+#             url=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts --jq ".artifacts[] | select(.name==\"$name\") | .archive_download_url")
+#             curl -sL -H "Authorization: token $GH_TOKEN" "$url" -o "$name.zip"
+#             unzip -q "$name.zip" -d temp
+#             cp -r temp/* allure-results/
+#             rm -rf temp "$name.zip"
+#           done
+
+#       - name: Download Allure CLI
+#         run: |
+#           wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+#           tar -zxvf allure-2.27.0.tgz
+#           sudo mv allure-2.27.0 /opt/allure
+#           sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+#       - name: Generate Allure report
+#         run: |
+#           allure generate allure-results -o allure-report --clean
+
+#       - name: Upload artifact for GitHub Pages
+#         uses: actions/upload-pages-artifact@v3
+#         with:
+#           path: allure-report
+
+#   deploy-report:
+#     runs-on: ubuntu-latest
+#     needs: generate-report
+#     if: always()
+#     environment:
+#       name: github-pages
+#       url: ${{ steps.deployment.outputs.page_url }}
+#     steps:
+#       - name: Deploy to GitHub Pages
+#         id: deployment
+#         uses: actions/deploy-pages@v4
+
+
+name: Run Automation Tests + Allure Report
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -23,93 +151,79 @@ jobs:
           - tests/test_login.py
           - tests/test_products.py
 
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4   # cập nhật lên v4 (ổn định hơn)
 
       - name: Install Chrome
         run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.13"
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip3 install -r requirements.txt
-          pip3 install allure-pytest
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install allure-pytest
 
-      - name: Run tests with pytest
+      # ← QUAN TRỌNG: Bỏ continue-on-error + ghi exit-code thủ công
+      # ← Để pytest tự trả exit code đúng (0 = pass, 1 = có fail, 5 = lỗi nghiêm trọng, 4 = không tìm thấy test)
+      - name: Run tests
         run: |
-          pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q | tee pytest-output.txt
-          echo "${PIPESTATUS[0]}" > exit-code.txt
-        continue-on-error: true
+          pytest ${{ matrix.suite }} \
+            --alluredir=allure-results \
+            --clean-alluredir \
+            -v
 
-      - name: Set safe artifact name
-        id: sanitize
-        run: echo "safe_name=$(echo '${{ matrix.suite }}' | tr '/' '_' | tr '.' '_')" >> $GITHUB_OUTPUT
-
-      - name: Upload Allure Results
+      # Chỉ upload khi có file kết quả (tránh upload thư mục rỗng)
+      - name: Upload Allure results (only if exist)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ steps.sanitize.outputs.safe_name }}
-          path: allure-results
-
-      - name: Fail the job if pytest failed
-        run: |
-          exit_code=$(cat exit-code.txt)
-          exit $exit_code
-        if: always()
+          name: allure-results-${{ matrix.suite || 'unknown' | replace('/', '_') }}
+          path: allure-results/
+          if-no-files-found: ignore   # không lỗi nếu không có file
 
   generate-report:
     runs-on: ubuntu-latest
     needs: test
-    if: always()
-    outputs:
-      report-dir: allure-report
-
+    if: always()   # vẫn chạy kể cả test fail
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install GitHub CLI and unzip
-        run: sudo apt-get update && sudo apt-get install -y gh jq unzip
+      - name: Download Allure artifacts & merge
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          merge-multiple: true
+          path: allure-results
 
-      - name: Download and merge allure results
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Debug - list files
         run: |
-          mkdir -p allure-results
-          artifacts=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts --jq '.artifacts[].name' | grep '^allure-results-')
+          echo "=== Allure results content ==="
+          ls -la allure-results/ || echo "Empty or missing"
 
-          echo "Merging artifacts:"
-          echo "$artifacts"
-
-          for name in $artifacts; do
-            url=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts --jq ".artifacts[] | select(.name==\"$name\") | .archive_download_url")
-            curl -sL -H "Authorization: token $GH_TOKEN" "$url" -o "$name.zip"
-            unzip -q "$name.zip" -d temp
-            cp -r temp/* allure-results/
-            rm -rf temp "$name.zip"
-          done
-
-      - name: Download Allure CLI
+      # Cài Allure CLI nhanh hơn (không cần wget + tar)
+      - name: Install Allure CLI
         run: |
-          wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
-          tar -zxvf allure-2.27.0.tgz
-          sudo mv allure-2.27.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          curl -o allure.tgz -Ls https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -zxvf allure.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          echo "/opt/allure/bin" >> $GITHUB_PATH
 
       - name: Generate Allure report
         run: |
-          allure generate allure-results -o allure-report --clean
+          allure generate allure-results --clean -o allure-report
 
-      - name: Upload artifact for GitHub Pages
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: allure-report
@@ -120,8 +234,9 @@ jobs:
     if: always()
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deploy
         uses: actions/deploy-pages@v4
