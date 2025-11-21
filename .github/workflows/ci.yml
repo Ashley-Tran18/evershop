@@ -128,7 +128,7 @@
 #         uses: actions/deploy-pages@v4
 
 
-nname: Run Automation Tests + Allure Report
+name: Run Automation Tests + Allure Report
 
 on:
   push:
