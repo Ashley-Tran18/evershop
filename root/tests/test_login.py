@@ -14,11 +14,11 @@ class TestLogin(BaseTest):
 
     # tests/test_login.py
     @allure.feature("Login")
-    def test_login():
+    def test_login(self):
         """Test dummy để CI không bị exit code 4"""
         assert True
     @allure.feature("Login")
-    def test_dummy_login_failed_for_demo():
+    def test_dummy_login_failed_for_demo(self):
         """Test fail để xem Allure report có hiện failed không"""
         assert False
    
