@@ -23,9 +23,9 @@ class BaseTest:
         }
         options.add_experimental_option("prefs", prefs)
         
-        # options.add_argument('--headless')
-        # options.add_argument('--no-sandbox')
-        # options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         
         base_url = ConfigReader.get_base_url()
