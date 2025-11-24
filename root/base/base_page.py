@@ -10,6 +10,9 @@ from selenium.webdriver.common.by import By
 from utils.config_reader import ConfigReader
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+import re
+from datetime import datetime
+
 
 
 class BasePage:
@@ -143,13 +146,29 @@ class BasePage:
             EC.url_contains(text)
         )
 
-    @allure.step("take screenshot")
-    def _screenshot(self, name):
-        os.makedirs("screenshots", exist_ok=True)
-        timestamp = time.strftime("%Y%m%d-%H%M%S")
-        path = f"screenshots/{name}_{timestamp}.png"
+    # @allure.step("take screenshot")
+    def _screenshot(self, name="screenshot"):
+        """
+        Tên file screenshot sẽ được sanitize để tránh lỗi WinError 123.
+        """
+
+        # Loại ký tự không hợp lệ: <>:"/\|?* , ' ( )
+        safe_name = re.sub(r'[<>:"/\\|?*\',() ]+', "_", name)
+
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        file_name = f"{safe_name}_{timestamp}.png"
+
+        path = os.path.join("screenshots", file_name)
+
+        # Chụp ảnh
         self.driver.save_screenshot(path)
-        allure.attach.file(path, name=f"screenshot_{name}", attachment_type=allure.attachment_type.PNG)
+
+        # Attach vào allure
+        allure.attach.file(
+            path,
+            name=f"{safe_name}",
+            attachment_type=allure.attachment_type.PNG,
+        )
     
     # ------------------------------------------------------------------ #
     # DROPDOWN (Select)
