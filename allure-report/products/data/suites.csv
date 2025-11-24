@@ -1,7 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","1656","TC005 - Search Product by Name","root.tests","Mon Nov 24 11:53:57 ICT 2025","passed","Mon Nov 24 11:53:59 ICT 2025","TestProducts","test_products","",""
-"","2950","TC010 - Open New Product Form","root.tests","Mon Nov 24 11:54:08 ICT 2025","passed","Mon Nov 24 11:54:11 ICT 2025","TestProducts","test_products","",""
-"","3600","TC013 - SKU Uniqueness Validation","root.tests","Mon Nov 24 11:54:45 ICT 2025","passed","Mon Nov 24 11:54:49 ICT 2025","TestProducts","test_products","",""
-"","2333","TC012 - Validation for Required Fields","root.tests","Mon Nov 24 11:54:34 ICT 2025","passed","Mon Nov 24 11:54:36 ICT 2025","TestProducts","test_products","",""
-"","1770","TC004 - View Products List","root.tests","Mon Nov 24 11:53:46 ICT 2025","passed","Mon Nov 24 11:53:48 ICT 2025","TestProducts","test_products","",""
-"","5000","TC011 - Create Product with required Fields","root.tests","Mon Nov 24 11:54:20 ICT 2025","passed","Mon Nov 24 11:54:25 ICT 2025","TestProducts","test_products","",""

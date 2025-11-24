@@ -77,13 +77,13 @@ class ProductsPage(BasePage, BaseLocator):
     def fill_product_form(self, product_data):
         product_data = ConfigReader.get_product_data()
         product_name = product_data['product_name']
-        product_sku = product_data['product_sku']
-        # product_sku = f"TEST_{int(time.time())}"
+        # product_sku = product_data['product_sku']
+        product_sku = f"TEST_{int(time.time())}"
         product_price = product_data['product_price']
         product_weight = product_data['product_weight']
         product_quantity = product_data['product_quantity']
-        product_url_key = product_data['product_url_key']
-        # product_url_key =  f"{product_name.replace(' ', '-').lower()}-{int(time.time())}"
+        # product_url_key = product_data['product_url_key']
+        product_url_key =  f"{product_name.replace(' ', '-').lower()}-{int(time.time())}"
         product_meta_title = product_data['product_meta_title']
      
         # fill general form

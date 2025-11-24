@@ -66,38 +66,48 @@ class BasePage:
 
     @allure.step("Find element {locator}")
     def find_element(self, locator, timeout: int = None):
-        """Return visible element."""
-        try:
-            return self.wait_for_visible(locator, timeout)
-        except TimeoutException as e:
-            self._screenshot(f"find_fail_{locator}")
-            raise TimeoutException(f"Element not visible: {locator}") from e
+        return self.wait_for_visible(locator, timeout)
+        # """Return visible element."""
+        # try:
+        #     return self.wait_for_visible(locator, timeout)
+        # except TimeoutException as e:
+        #     self._screenshot(f"find_fail_{locator}")
+        #     raise TimeoutException(f"Element not visible: {locator}") from e     
+       
         
     @allure.step("Find all element {locator}")
     def find_elements(self, locator, timeout: int = None):
-        """Return list of present elements (may be empty)."""
-        try:
-            WebDriverWait(self.driver, timeout or self.timeout).until(
-                EC.presence_of_all_elements_located(locator)
+        WebDriverWait(self.driver, timeout or self.timeout).until(
+            EC.presence_of_all_elements_located(locator)
             )
-            return self.driver.find_elements(*locator)
-        except TimeoutException:
-            return []
+        return self.driver.find_elements(*locator)
+        # """Return list of present elements (may be empty)."""
+        # try:
+        #     WebDriverWait(self.driver, timeout or self.timeout).until(
+        #         EC.presence_of_all_elements_located(locator)
+        #     )
+        #     return self.driver.find_elements(*locator)
+        # except TimeoutException:
+        #     return []
 
     # ------------------------------------------------------------------ #
     # INTERACTIONS
     # ------------------------------------------------------------------ #
     @allure.step("Click {locator}")
     def click(self, locator, timeout: int = None):
-        try:
             element = WebDriverWait(self.driver, timeout or self.timeout).until(
                 EC.element_to_be_clickable(locator)
             )
             element.click()
-            self._screenshot(f"clicked_{locator}")
-        except TimeoutException:
-            self._screenshot(f"click_fail_{locator}")
-            raise
+        # try:
+        #     element = WebDriverWait(self.driver, timeout or self.timeout).until(
+        #         EC.element_to_be_clickable(locator)
+        #     )
+        #     element.click()
+        #     self._screenshot(f"clicked_{locator}")
+        # except TimeoutException:
+        #     self._screenshot(f"click_fail_{locator}")
+        #     raise
 
     @allure.step("Type '{text}' into {locator}")
     def send_keys(self, locator, text:str):
@@ -218,16 +228,20 @@ class BasePage:
     # 1. Wait for Toast (locator passed from Page)
     # ======================================
     def wait_for_toast(self, toast_locator: tuple, expected_text: str, timeout=10):
-        try:
-            WebDriverWait(self.driver, timeout).until(
+        WebDriverWait(self.driver, timeout).until(
                 EC.text_to_be_present_in_element(toast_locator, expected_text)
             )
-            return True
-        except Exception:
-            self.attach_screenshot("toast_not_found")
-            raise AssertionError(
-                f"❌ Toast message not found: '{expected_text}'"
-            )
+        return True
+        # try:
+        #     WebDriverWait(self.driver, timeout).until(
+        #         EC.text_to_be_present_in_element(toast_locator, expected_text)
+        #     )
+        #     return True
+        # except Exception:
+        #     self.attach_screenshot("toast_not_found")
+        #     raise AssertionError(
+        #         f"❌ Toast message not found: '{expected_text}'"
+        #     )
 
     # ======================================
     # 2. Check toast success (locator passed from Page)
