@@ -15,7 +15,6 @@ class BaseTest:
         
         options = Options()
         options.add_argument("--start-maximized")
-        
         options.add_argument("--incognito")
         prefs = {
             "credentials_enable_service": False,         # Tắt dịch vụ lưu mật khẩu

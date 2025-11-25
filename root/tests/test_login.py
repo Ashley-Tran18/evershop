@@ -126,5 +126,5 @@ class TestLogin(BaseTest):
         start_time = time.time()
         login_page.login(*ConfigReader.get_email_password())     
         duration = time.time() - start_time
-        # assert duration < 2, f"Login too slow: {duration:.1f}s"
+        assert duration < 2, f"Login too slow: {duration:.1f}s"
         
