@@ -1,0 +1,27 @@
+Page not ready: Message: stale element reference: stale element not found
+  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception
+Stacktrace:
+#0 0x605343eb838a <unknown>
+#1 0x605343972b0b <unknown>
+#2 0x6053439862cb <unknown>
+#3 0x60534398509c <unknown>
+#4 0x60534397a288 <unknown>
+#5 0x6053439784bf <unknown>
+#6 0x60534397c0e3 <unknown>
+#7 0x60534397c1b3 <unknown>
+#8 0x6053439beb1d <unknown>
+#9 0x6053439b8338 <unknown>
+#10 0x605343a10748 <unknown>
+#11 0x6053439b6aaf <unknown>
+#12 0x6053439b77b1 <unknown>
+#13 0x605343e820ef <unknown>
+#14 0x605343e851c2 <unknown>
+#15 0x605343e6b3a3 <unknown>
+#16 0x605343e85997 <unknown>
+#17 0x605343e54ade <unknown>
+#18 0x605343ea64e8 <unknown>
+#19 0x605343ea6704 <unknown>
+#20 0x605343eb715c <unknown>
+#21 0x7bca3c09caa4 <unknown>
+#22 0x7bca3c129c6c <unknown>
+

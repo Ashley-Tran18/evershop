@@ -23,10 +23,14 @@ class BaseTest:
         }
         options.add_experimental_option("prefs", prefs)
         
+        # Các args cho Linux/headless
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        options.add_argument('--disable-gpu')  # Thêm để ổn định headless
+        options.add_argument('--disable-features=VizDisplayCompositor')  # Fix lỗi render
+        
+        self.driver = webdriver.Chrome(service=Service(), options=options)
         
         base_url = ConfigReader.get_base_url()
         self.driver.get(base_url)

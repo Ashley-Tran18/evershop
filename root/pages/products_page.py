@@ -132,6 +132,32 @@ class ProductsPage(BasePage, BaseLocator):
             toast_text='Exception in middleware createProduct: duplicate key value violates unique constraint "PRODUCT_SKU_UNIQUE"'
         )
 
+    @allure.step("Fill sku_uniqueness in Product form")
+    def fill_sku_uniqueness_in_product_form(self, product_data):
+        product_data = ConfigReader.get_product_data()
+        product_name = product_data['product_name']
+        product_sku = product_data['product_sku']
+        product_price = product_data['product_price']
+        product_weight = product_data['product_weight']
+        product_quantity = product_data['product_quantity']
+        product_url_key = product_data['product_url_key']
+        product_meta_title = product_data['product_meta_title']
+     
+        # fill general form
+        self.send_keys(self.product_name_input, product_name)
+        self.send_keys(self.product_sku_input, product_sku)
+        self.send_keys(self.product_price_input, product_price)
+        self.send_keys(self.product_weight_input, product_weight)
+
+        # fill quantity and search engine optimize
+        self.send_keys(self.product_quantity_input, product_quantity)
+        self.send_keys(self.product_url_key_input, product_url_key)
+        self.send_keys(self.product_meta_title_input, product_meta_title)
+        
+        # select attribute
+        self.click(self.product_color_list)
+        self.click(self.product_color_option)
+
 
 
     # def add_product_data_and_submit(self, product_data):
