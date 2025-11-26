@@ -1,12 +1,10 @@
 # base/base_page.py
 import os
-import time
 import allure
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
 from utils.config_reader import ConfigReader
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -114,7 +112,28 @@ class BasePage:
         el = self.wait_for_visible(locator)
         el.clear()
         el.send_keys(text)
+
+    @staticmethod
+    def remove_non_bmp(text: str) -> str:
+        """
+        Loại bỏ ký tự có codepoint > 0xFFFF (những ký tự ngoài BMP như nhiều emoji).
+        Cách an toàn: giữ các ký tự có ord <= 0xFFFF.
+        """
+        if text is None:
+            return text
+        return ''.join(c for c in text if ord(c) <= 0xFFFF)
     
+    def send_keys_remove_non_bmp(self, locator, text, clear_first=True):
+        """
+        Gồm bước: lọc ký tự ngoài BMP -> clear input -> send_keys
+        """
+        safe_text = self.remove_non_bmp(text)
+        elem = WebDriverWait(self.driver, self.timeout).until(EC.visibility_of_element_located(locator))
+        if clear_first:
+            elem.clear()
+        elem.send_keys(safe_text)
+
+
     @allure.step("Get text of {locator}")
     def get_text(self, locator):
         return self.wait_for_visible(locator).text.strip()
@@ -161,18 +180,13 @@ class BasePage:
         """
         Tên file screenshot sẽ được sanitize để tránh lỗi WinError 123.
         """
-
         # Loại ký tự không hợp lệ: <>:"/\|?* , ' ( )
         safe_name = re.sub(r'[<>:"/\\|?*\',() ]+', "_", name)
-
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         file_name = f"{safe_name}_{timestamp}.png"
-
         path = os.path.join("screenshots", file_name)
-
         # Chụp ảnh
         self.driver.save_screenshot(path)
-
         # Attach vào allure
         allure.attach.file(
             path,
@@ -309,3 +323,16 @@ class BasePage:
             )
         except:
             pass
+
+    # ======================================
+    # 4. Upload image
+    # ======================================
+
+    def wait_for_upload_complete(self, locator_done, timeout=None): 
+        timeout = timeout or self.timeout 
+        try: 
+            WebDriverWait(self.driver, timeout).until( 
+                EC.visibility_of_element_located(locator_done) 
+                ) 
+            print("✅ Upload complete")
+        except TimeoutException: print("⚠️ Upload may not have completed in time")

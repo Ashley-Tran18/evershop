@@ -56,6 +56,22 @@ class ConfigReader:
     def get_product_data():
         return ConfigReader.load_config()['product_data']
     
+   
+    # @staticmethod
+    # def get_product_name(scenario: str = "normal") -> str:
+    #     config = ConfigReader.load_config()
+    #     try:
+    #         return config["product_data"]["product_name"][scenario]
+    #     except KeyError as e:
+    #         raise KeyError(f"Không tìm thấy product_name cho scenario '{scenario}'. "
+    #                     f"Các scenario có sẵn: {list(config['product_data']['product_name'].keys())}") from e
+    
+    @staticmethod
+    def get_product_name(scenario: str = "normal") -> str:
+        config = ConfigReader.load_config()
+        return config["product_data"]["product_name"][scenario]
+        
+
     @staticmethod
     def get_category_data():
         return ConfigReader.load_config()['category_data']
@@ -69,6 +85,5 @@ class ConfigReader:
         return ConfigReader.load_config()['coupon_data']
         
         
-
 
 

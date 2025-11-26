@@ -32,16 +32,21 @@
   },
 
 
-
-  
   "collection_data": {
     "collection_name": "collection test 11",
     "collection_code": "colection_code_11",
     "collection_des": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
 },
+
 "product_data":
     {
-        "product_name": "Sofa Luxury Set",
+      "product_name": {
+        "max_length": "Apart from counting words and characters, our online editor can help you to improve word choice and writing style, and, optionally, help you to detect grammar mistakes and plagiarism. To check word count, simply place your cursor into the text box above a",
+        "special_chars": "Men's Jacket & Special 'Chars' 2025! \"<>{}[];:/",
+        "with_emoji": "Winter Jacket 2025 ₊✩‧₊˚౨ৎ˚₊✩‧₊ 😁",
+        "normal": "Blue Jacket Premium"
+      }
+      ,
         "product_sku": "SKU0001",
         "product_price": "199.99",
         "product_weight": "2",

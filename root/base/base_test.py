@@ -11,7 +11,7 @@ import os
 
 class BaseTest:
     @pytest.fixture(autouse=True)
-    def setup(self,request):
+    def driver(self,request):
         
         options = Options()
         options.add_argument("--start-maximized")
@@ -23,11 +23,11 @@ class BaseTest:
         options.add_experimental_option("prefs", prefs)
         
         # Các args cho Linux/headless
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')  # Thêm để ổn định headless
-        options.add_argument('--disable-features=VizDisplayCompositor')  # Fix lỗi render
+        # options.add_argument('--headless')
+        # options.add_argument('--no-sandbox')
+        # options.add_argument('--disable-dev-shm-usage')
+        # options.add_argument('--disable-gpu')  # Thêm để ổn định headless
+        # options.add_argument('--disable-features=VizDisplayCompositor')  # Fix lỗi render
         
         self.driver = webdriver.Chrome(service=Service(), options=options)
         
@@ -38,7 +38,7 @@ class BaseTest:
         request.cls.driver = self.driver
         yield
         self.driver.quit()
-        
+
 
 #     # @pytest.fixture(autouse=True)
 #     def login_with_cookies(self, driver):

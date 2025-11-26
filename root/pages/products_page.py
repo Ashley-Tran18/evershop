@@ -1,3 +1,4 @@
+# pages.products_page.py
 from selenium.webdriver.common.by import By
 from base.base_page import BasePage
 from base.base_locator import BaseLocator
@@ -20,21 +21,17 @@ class ProductsPage(BasePage, BaseLocator):
         self.products_menu = (By.XPATH, "//li[@class='root-nav-item nav-item']//a[@href='https://e2e.evershop.app/admin/products']")
         self.new_product_btn = (By.XPATH, "//div[@class = 'flex justify-end space-x-2 items-center']//span[text() = 'New Product']")
         self.create_product_header = (By.XPATH, "//h1[@class = 'page-heading-title']")
-
         self.search_input = (By.XPATH, "//input[@id = 'field-keyword']")
         self.filter_status = (By.XPATH, "//div[@class = 'filter-container']//span[text() = 'Status']")
         self.enabled_status = (By.XPATH, "//ul//li//a[text() = 'Enabled']")
         self.disabled_status = (By.XPATH, "//ul//li//a[text() = 'Disabled']")
-        
         self.table_rows = (By.XPATH, "//table//tbody/tr")
         self.table = (By.XPATH, "//table/tbody")
         self.product_name_column = (By.XPATH, "//tbody/tr/td[3]//a")
         self.table_column_header = (By.XPATH, "//table/thead/tr/th")
         self.check_box = (By.XPATH, "//input[@type='checkbox']")
-
         self.product_color_list = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']")
         self.product_color_option = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']//option[text() = 'White']")
-    
         self.inline_error_msg = (By.XPATH, "//p[@class = 'field-error']")
 
 
@@ -42,6 +39,10 @@ class ProductsPage(BasePage, BaseLocator):
     def login(self):
         login_page = LoginPage(self.driver)
         login_page.login(*ConfigReader.get_email_password()) 
+
+    # ======================================
+    # 1. Products Page
+    # ======================================
 
     @allure.title("Click product menu")
     def click_product_menu(self):
@@ -60,6 +61,10 @@ class ProductsPage(BasePage, BaseLocator):
     def get_table_rows(self):
         return self.find_elements((self.table_rows)) # Wait for table rows to be visible
 
+    # ======================================
+    # 2. Create Products Page
+    # ======================================
+
     @allure.step("Click create new product")
     def click_new_product(self):
         self.click(self.new_product_btn)
@@ -72,32 +77,46 @@ class ProductsPage(BasePage, BaseLocator):
     @allure.step("Get title")
     def get_create_product_title_text(self):
         return self.find_element(self.create_product_header).text
-   
-    @allure.step("Fill Product form")
-    def fill_product_form(self, product_data):
-        product_data = ConfigReader.get_product_data()
-        product_name = product_data['product_name']
-        product_sku = f"TEST_{int(time.time())}"
-        product_price = product_data['product_price']
-        product_weight = product_data['product_weight']
-        product_quantity = product_data['product_quantity']
-        product_url_key =  f"{product_name.replace(' ', '-').lower()}-{int(time.time())}"
-        product_meta_title = product_data['product_meta_title']
-     
-        # fill general form
-        self.send_keys(self.product_name_input, product_name)
-        self.send_keys(self.product_sku_input, product_sku)
-        self.send_keys(self.product_price_input, product_price)
-        self.send_keys(self.product_weight_input, product_weight)
+    
+    def is_product_name_displayed(self):
+        return self.is_displayed(self.product_name_input)
+    
+    
+    
+    @allure.step("Enter Product Name")
+    def enter_product_name(self, name):
+        self.send_keys_remove_non_bmp(self.product_name_input, name)
 
-        # fill quantity and search engine optimize
-        self.send_keys(self.product_quantity_input, product_quantity)
-        self.send_keys(self.product_url_key_input, product_url_key)
-        self.send_keys(self.product_meta_title_input, product_meta_title)
+    def get_product_name_value(self):
+        return self.find_element(self.product_name_input).get_attribute("value")
+
+    @allure.step("Enter SKU")
+    def enter_product_sku(self):
+        self.send_keys(self.product_sku_input, self.product_sku)
+
+   
+    # @allure.step("Fill Product form")
+    # def fill_product_form(self, product_data):
+        # product_data = ConfigReader.get_product_data()
+        # product_name = product_data['product_name']
+        # product_sku = f"TEST_{int(time.time())}"
+        # product_price = product_data['product_price']
+        # product_weight = product_data['product_weight']
+        # product_quantity = product_data['product_quantity']
+        # product_url_key =  f"{product_name.replace(' ', '-').lower()}-{int(time.time())}"
+        # product_meta_title = product_data['product_meta_title']
+     
+        # # fill general form
+        # self.send_keys(self.product_name_input, product_name)
+        # self.send_keys(self.product_sku_input, product_sku)
+        # self.send_keys(self.product_price_input, product_price)
+        # self.send_keys(self.product_weight_input, product_weight)
+
+        # # fill quantity and search engine optimize
+        # self.send_keys(self.product_quantity_input, product_quantity)
+        # self.send_keys(self.product_url_key_input, product_url_key)
+        # self.send_keys(self.product_meta_title_input, product_meta_title)
         
-        # select attribute
-        self.click(self.product_color_list)
-        self.click(self.product_color_option)
 
     @allure.step("Save product")
     def click_save_btn(self):
@@ -152,68 +171,51 @@ class ProductsPage(BasePage, BaseLocator):
         self.send_keys(self.product_url_key_input, product_url_key)
         self.send_keys(self.product_meta_title_input, product_meta_title)
         
-        # select attribute
+    @allure.step("Select color attribute") 
+    def select_color(self):   
         self.click(self.product_color_list)
         self.click(self.product_color_option)
 
+    @allure.step("Select category") 
+    def select_category(self): 
+        self.click(self.select_product_category)
+        self.click(self.product_men_category)
+
+    @allure.step("Add description") 
+    def add_description(self, product_data): 
+        product_data = ConfigReader.get_product_data()
+        product_description = product_data['product_description']
+        # select and fill quotes description
+        self.click(self.product_des_type)
+        self.click(self.product_available_block_1)
+        self.click(self.product_des_type_plus_1)    
+        self.click(self.product_des_quote_select)     
+        self.send_keys(self.product_quote_input, product_description)
+        self.send_keys(self.product_quote_caption_input, product_description)
+
+        # select and fill raw HTML description
+        self.click(self.product_available_block_2)
+        self.click(self.product_des_type_plus_2)
+        self.click(self.product_des_rawhtml_select)
+        self.send_keys(self.product_rawhtml_input, product_description)
 
 
-    # def add_product_data_and_submit(self, product_data):
-    #     product_data = ConfigReader.get_product_data()
-    #     product_name = product_data['product_name']
-    #     product_sku = product_data['product_sku']
-    #     product_price = product_data['product_price']
-    #     product_weight = product_data['product_weight']
-    #     product_quantity = product_data['product_quantity']
-    #     product_url_key = product_data['product_url_key']
-    #     product_meta_title = product_data['product_meta_title']
-    #     product_meta_des = product_data['product_meta_description']
-    #     product_des = product_data['product_description']
-    #     product_image = product_data['product_image']
-
-    #     # fill general form
-    #     self.send_keys(self.product_name_input, product_name)
-    #     self.send_keys(self.product_sku_input, product_sku)
-    #     self.send_keys(self.product_price_input, product_price)
-    #     self.send_keys(self.product_weight_input, product_weight)
-
-    #     # select category
-    #     self.click(self.select_product_category)
-    #     self.wait_and_click(self.product_men_category)
-
-    #     # select and fill quotes description
-    #     self.wait_and_click(self.product_des_type)
-    #     self.hover_to_element(self.product_available_block_1)
-    #     self.wait_and_click(self.product_des_type_plus_1)    
-    #     self.wait_and_click(self.product_des_quote_select)     
-    #     self.send_keys(self.product_quote_input, product_des)
-    #     self.send_keys(self.product_quote_caption_input, product_des)
-    
-    #     # select and fill raw HTML description
-    #     self.wait_and_click(self.product_available_block_2)
-    #     self.wait_and_click(self.product_des_type_plus_2)
-    #     self.wait_and_click(self.product_des_rawhtml_select)
-    #     self.send_keys(self.product_rawhtml_input, product_des)
-
-    #     # upload image
-    #     base = os.path.abspath("images")
-    #     images = os.path.join(base, product_image)
-    #     file_input = self.presence_of_element(self.product_upload_image)
-    #     file_input.send_keys(images)
-    #     self.wait_for_upload_complete(self.product_uploaded_image)
+    @allure.step("Upload image") 
+    def upload_image(self, product_data): 
+        product_data = ConfigReader.get_product_data()
+        product_image = product_data['product_image']
+       
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        image_path = os.path.join(project_root, "images", product_image)
         
-    #     # fill quantity and search engine optimize
-    #     self.send_keys(self.product_quantity_input, product_quantity)
-    #     self.send_keys(self.product_url_key_input, product_url_key)
-    #     self.send_keys(self.product_meta_title_input, product_meta_title)
-    #     self.send_keys(self.product_meta_des_input, product_meta_des)
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"❌ Image not found: {image_path}")
         
-    #     # select attribute
-    #     self.wait_and_click(self.product_color_list)
-    #     self.wait_and_click(self.product_color_option)
+        file_input = self.wait_for_presence(self.product_upload_image)
+        file_input.send_keys(image_path)
+        self.wait_for_upload_complete(self.product_uploaded_image)
 
-
-        
+   
 
     # def back_to_product_page(self):
     #     "Back to the product listing page"
