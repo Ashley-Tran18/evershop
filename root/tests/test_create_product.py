@@ -95,7 +95,7 @@ class TestCreateProducts(BaseTest):
         filled_value = self.create_product_page.get_product_name_value()
         assert filled_value == name, f"Expected name '{name}', but got '{filled_value}'"
 
-        
+
     
    
 

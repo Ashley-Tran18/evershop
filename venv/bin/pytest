@@ -1,4 +1,4 @@
-#!/home/thaotran/evershop/venv/bin/python3
+#!/Users/ashley/Downloads/test-selenium-python/evershop/evershop/venv/bin/python3.13
 import sys
 from pytest import console_main
 if __name__ == '__main__':

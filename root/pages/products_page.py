@@ -173,8 +173,22 @@ class ProductsPage(BasePage, BaseLocator):
     @allure.step("Enter Price")
     def enter_product_price(self, price):
         self.send_keys(self.product_price_input, price)
-   
 
+    @allure.step("Enter weight")
+    def enter_product_weight(self, weight):
+        self.send_keys(self.product_weight_input, weight)
+
+    @allure.step("Enter quantity")
+    def enter_product_quantity(self, quantity):
+        self.send_keys(self.product_quantity_input, quantity)
+
+    @allure.step("Enter URL Key")
+    def enter_product_url_key(self, url_key):
+        self.send_keys(self.product_url_key_input, url_key)
+
+    @allure.step("Enter meta title")
+    def enter_product_meta_title(self, meta_title):
+        self.send_keys(self.product_meta_title_input, meta_title)
 
 
 
