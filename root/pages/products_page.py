@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from base.base_page import BasePage
 from base.base_locator import BaseLocator
 from utils.config_reader import ConfigReader
+from utils.helper import HelperConfig
 from pages.login_page import LoginPage
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -30,9 +31,25 @@ class ProductsPage(BasePage, BaseLocator):
         self.product_name_column = (By.XPATH, "//tbody/tr/td[3]//a")
         self.table_column_header = (By.XPATH, "//table/thead/tr/th")
         self.check_box = (By.XPATH, "//input[@type='checkbox']")
+        self.inline_error_msg = (By.XPATH, "//p[@class = 'field-error']")
+
+
+        self.enabled_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'Enabled']")
+        self.disabled_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'Disabled']")
+        self.not_visible_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'Not visible individually']")
+        self.catalog_search_visible_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'Not visible individually']")
+        self.manage_stock_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'Yes']")
+        self.no_manage_stock_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'No']")
+        self.in_stock_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'In Stock']")
+        self.out_of_stock_toggle = (By.XPATH, "//div[@class = 'radio-item']//label[text() = 'Out of Stock']")
+
+        self.product_attributes_section = (By.XPATH, "//div[@class = 'card-section border-b box-border']//h3[text() = 'Attributes']")
+        self.product_size_list = (By.XPATH, "//tr//select[@id = 'field-attributes.0.value']")
         self.product_color_list = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']")
         self.product_color_option = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']//option[text() = 'White']")
-        self.inline_error_msg = (By.XPATH, "//p[@class = 'field-error']")
+        
+        
+
 
 
     @allure.title("Login Successfully with Valid Credentials")
@@ -78,11 +95,70 @@ class ProductsPage(BasePage, BaseLocator):
     def get_create_product_title_text(self):
         return self.find_element(self.create_product_header).text
     
+    @allure.step("Check if General Information Fields display - UI Elements ")
     def is_product_name_displayed(self):
         return self.is_displayed(self.product_name_input)
+    def is_sku_displayed(self):
+        return self.is_displayed(self.product_sku_input)
+    def is_price_displayed(self):
+        return self.is_displayed(self.product_price_input)
+    def is_weight_displayed(self):
+        return self.is_displayed(self.product_weight_input)
+    def is_select_category_displayed(self):
+        return self.is_displayed(self.select_product_category)
+    def is_description_displayed(self):
+        return self.is_displayed(self.product_description)
+    def is_media_displayed(self):
+        return self.is_displayed(self.product_upload_image)
+
+    @allure.step("# Check if Search engine optimize display - UI Elements")
+    def is_url_key_displayed(self):
+        return self.is_displayed(self.product_url_key_input)
+    def is_meta_title_displayed(self):
+        return self.is_displayed(self.product_meta_title_input)
+    def is_meta_description_displayed(self):
+        return self.is_displayed(self.product_meta_des_input)
     
+    @allure.step("# Check if product status & visibility display - UI Elements")
+    def is_status_enabled_selected(self):
+        return self.is_displayed(self.enabled_toggle)
+    def is_visibility_catalog_search_selected(self):
+        return self.is_displayed(self.catalog_search_visible_toggle)
     
+    @allure.step("# Check if inventory management display - UI Elements")
+    def is_manage_stock_yes_selected(self):
+        return self.is_displayed(self.manage_stock_toggle)
+    def is_in_stock_availability_selected(self):
+        return self.is_displayed(self.in_stock_toggle)
+    def is_quantity_displayed(self):
+        return self.is_displayed(self.product_quantity_input)
+
     
+    @allure.step("# Check if attribute section display - UI Elements")
+    def is_attributes_section_displayed(self):
+        return self.is_displayed(self.product_attributes_section)
+    def is_size_dropdown_displayed(self):
+        return self.is_displayed(self.product_size_list)
+    def is_color_dropdown_displayed(self):
+        return self.is_displayed(self.product_color_list)
+
+
+    @allure.step("Upload image") 
+    def upload_image(self, image): 
+        image_path = HelperConfig.get_absolute_image_path(image)
+        file_input = self.wait_for_presence(self.product_upload_image)
+        file_input.send_keys(image_path)
+        self.wait_for_upload_complete(self.product_uploaded_image)
+
+    @allure.step("Check if image is uploaded")
+    def is_image_uploaded(self):
+        return self.is_displayed(self.product_uploaded_image)
+
+    @allure.step("Remove image")
+    def remove_image(self):
+        return self.click(self.remove_image_btn)
+
+
     @allure.step("Enter Product Name")
     def enter_product_name(self, name):
         self.send_keys_remove_non_bmp(self.product_name_input, name)
@@ -91,10 +167,39 @@ class ProductsPage(BasePage, BaseLocator):
         return self.find_element(self.product_name_input).get_attribute("value")
 
     @allure.step("Enter SKU")
-    def enter_product_sku(self):
-        self.send_keys(self.product_sku_input, self.product_sku)
+    def enter_product_sku(self, sku):
+        self.send_keys(self.product_sku_input, sku)
 
+    @allure.step("Enter Price")
+    def enter_product_price(self, price):
+        self.send_keys(self.product_price_input, price)
    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # @allure.step("Fill Product form")
     # def fill_product_form(self, product_data):
         # product_data = ConfigReader.get_product_data()
@@ -200,21 +305,7 @@ class ProductsPage(BasePage, BaseLocator):
         self.send_keys(self.product_rawhtml_input, product_description)
 
 
-    @allure.step("Upload image") 
-    def upload_image(self, product_data): 
-        product_data = ConfigReader.get_product_data()
-        product_image = product_data['product_image']
-       
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        image_path = os.path.join(project_root, "images", product_image)
-        
-        if not os.path.exists(image_path):
-            raise FileNotFoundError(f"❌ Image not found: {image_path}")
-        
-        file_input = self.wait_for_presence(self.product_upload_image)
-        file_input.send_keys(image_path)
-        self.wait_for_upload_complete(self.product_uploaded_image)
-
+  
    
 
     # def back_to_product_page(self):

@@ -13,6 +13,8 @@ class BaseLocator:
         self.save_btn = (By.XPATH, "//div[@class = 'form-submit-button flex border-t border-divider mt-4 pt-4 justify-between']//button[@class = 'button primary']")
         self.edit_back_btn = (By.XPATH, "//div[contains(@class, 'flex justify-start')]//span[@class = 'flex items-center justify-center']")
         self.del_btn = (By.XPATH, "//div[contains(@class, 'border border-divider')]//span[text()= 'Delete']")
+        self.remove_image_btn = (By.XPATH, "//span[@class = 'remove cursor-pointer text-critical fill-current ']")
+        
         # Login Page Locators
         
         self.dashboard_header = (By.XPATH, "//h1[@class = 'page-heading-title']")
@@ -70,6 +72,7 @@ class BaseLocator:
         self.product_weight_input = (By.XPATH, "//div[@class = 'card-session-content pt-lg']//input[@id='field-weight']")
         self.select_product_category = (By.XPATH, "//div[@class = 'mt-4 relative']//a[@class = 'text-interactive']")
         self.product_men_category = (By.XPATH, "//span[text() = 'Men']/ancestor::div[contains(@class, 'grid grid-cols-8')]/descendant::button")
+        self.product_description = (By.XPATH, "//div[@class = 'editor form-field-container']")
         self.product_des_type = (By.XPATH, "//div[contains(@class , 'row-templates')]//a[3]")
         self.product_available_block_1 = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1']")
         self.product_des_type_plus_1 = (By.XPATH, "//div[@class = 'column p-3 md:col-span-1']//div[@class = 'ce-toolbar__plus']")

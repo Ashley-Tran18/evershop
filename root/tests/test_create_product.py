@@ -27,10 +27,64 @@ class TestCreateProducts(BaseTest):
     def test_open_create_product_form(self):
         assert "Create a new product" in self.create_product_page.get_create_product_title_text()
 
-
-    @allure.title("Verify General Information Fields UI Elements")
+    # ======================================
+    # Verify General Information Fields UI Elements
+    # ======================================
+    @allure.title("Verify General Information Fields")
     def test_general_info_fields(self):
         assert self.create_product_page.is_product_name_displayed()
+        assert self.create_product_page.is_sku_displayed()
+        assert self.create_product_page.is_price_displayed()
+        assert self.create_product_page.is_weight_displayed()
+        assert self.create_product_page.is_select_category_displayed()
+        assert self.create_product_page.is_description_displayed()
+
+    # ======================================
+    # Verify Search engine optimize UI Elements
+    # ======================================
+    @allure.title("Verify Search engine optimize")
+    def test_search_engine_optimize_fields(self):
+        assert self.create_product_page.is_url_key_displayed()
+        assert self.create_product_page.is_meta_title_displayed()
+        assert self.create_product_page.is_meta_description_displayed()
+
+    # ======================================
+    # Verify Product status UI Elements
+    # ======================================
+    @allure.title("Verify Product Status and Visibility")
+    def test_product_status_visibility(self):
+        assert self.create_product_page.is_status_enabled_selected()
+        assert self.create_product_page.is_visibility_catalog_search_selected()
+        allure.attach(self.driver.get_screenshot_as_png(), name="inventory", attachment_type=allure.attachment_type.PNG)
+    
+    # ======================================
+    # Verify Inventory UI Elements
+    # ======================================
+    @allure.title("Verify Inventory Management Fields")
+    def test_inventory_management(self):
+        assert self.create_product_page.is_manage_stock_yes_selected()
+        assert self.create_product_page.is_in_stock_availability_selected()
+        assert self.create_product_page.is_quantity_displayed()
+
+    # ======================================
+    # Verify Attributes UI Elements
+    # ======================================
+    @allure.title("Verify Attributes section")
+    def test_attributes_section(self):
+        assert self.create_product_page.is_attributes_section_displayed()
+        assert self.create_product_page.is_size_dropdown_displayed()
+        assert self.create_product_page.is_color_dropdown_displayed()
+
+
+    # ======================================
+    # Verify Media upload function
+    # ======================================
+    @allure.title("Verify Media upload function")
+    def test_media_upload(self):
+        image = ConfigReader.get_product_image()
+        self.create_product_page.upload_image(image)
+        assert self.create_product_page.is_image_uploaded()
+        self.create_product_page.remove_image()
 
 
 
@@ -38,11 +92,11 @@ class TestCreateProducts(BaseTest):
     def test_product_name_validations(self):
         name = ConfigReader.get_product_name("normal")
         self.create_product_page.enter_product_name(name)
-        # 🔥 ASSERT value đã được fill
         filled_value = self.create_product_page.get_product_name_value()
         assert filled_value == name, f"Expected name '{name}', but got '{filled_value}'"
 
         
+    
    
 
     # @allure.title("TC011 - Create Product with required Fields") 

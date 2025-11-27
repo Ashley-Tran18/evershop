@@ -70,6 +70,11 @@ class ConfigReader:
     def get_product_name(scenario: str = "normal") -> str:
         config = ConfigReader.load_config()
         return config["product_data"]["product_name"][scenario]
+    
+    @staticmethod
+    def get_product_image():
+        config = ConfigReader.load_config()
+        return config['product_data']['product_image']
         
 
     @staticmethod

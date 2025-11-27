@@ -314,6 +314,13 @@ class BasePage:
     # ======================================
     # 4. Screenshot (Allure attach)
     # ======================================
+    def get_screenshot_as_png(self):
+        """
+        Chụp màn hình hiện tại của browser và trả về dạng binary PNG.
+        Dùng cho Allure.attach(..., attachment_type=PNG)
+        """
+        return self.driver.get_screenshot_as_png()
+    
     def attach_screenshot(self, name="screenshot"):
         try:
             allure.attach(

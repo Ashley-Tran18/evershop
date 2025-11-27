@@ -24,6 +24,7 @@ jobs:
         suite:
           - root/tests/test_login.py
           - root/tests/test_products.py
+          - root/tests/test_create_product.py
 
 
     steps:

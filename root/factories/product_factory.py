@@ -13,6 +13,7 @@ class ProductFactory:
             'sku': f"TEST_{timestamp}",
             'price': product_data['product_price'],
             'weight': product_data['product_weight'],
+            'image': product_data['product_image'],
             'quantity': product_data['product_quantity'],
             'url_key': f"{product_data['product_name'].replace(' ', '-').lower()}-{timestamp}",
             'meta_title': product_data['product_meta_title']
