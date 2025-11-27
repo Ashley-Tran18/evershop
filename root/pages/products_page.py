@@ -48,9 +48,6 @@ class ProductsPage(BasePage, BaseLocator):
         self.product_color_list = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']")
         self.product_color_option = (By.XPATH, "//tr//select[@id = 'field-attributes.1.value']//option[text() = 'White']")
         
-        
-
-
 
     @allure.title("Login Successfully with Valid Credentials")
     def login(self):
@@ -158,10 +155,9 @@ class ProductsPage(BasePage, BaseLocator):
     def remove_image(self):
         return self.click(self.remove_image_btn)
 
-
     @allure.step("Enter Product Name")
     def enter_product_name(self, name):
-        self.send_keys_remove_non_bmp(self.product_name_input, name)
+        self.send_keys(self.product_name_input, name)
 
     def get_product_name_value(self):
         return self.find_element(self.product_name_input).get_attribute("value")
@@ -189,57 +185,14 @@ class ProductsPage(BasePage, BaseLocator):
     @allure.step("Enter meta title")
     def enter_product_meta_title(self, meta_title):
         self.send_keys(self.product_meta_title_input, meta_title)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # @allure.step("Fill Product form")
-    # def fill_product_form(self, product_data):
-        # product_data = ConfigReader.get_product_data()
-        # product_name = product_data['product_name']
-        # product_sku = f"TEST_{int(time.time())}"
-        # product_price = product_data['product_price']
-        # product_weight = product_data['product_weight']
-        # product_quantity = product_data['product_quantity']
-        # product_url_key =  f"{product_name.replace(' ', '-').lower()}-{int(time.time())}"
-        # product_meta_title = product_data['product_meta_title']
-     
-        # # fill general form
-        # self.send_keys(self.product_name_input, product_name)
-        # self.send_keys(self.product_sku_input, product_sku)
-        # self.send_keys(self.product_price_input, product_price)
-        # self.send_keys(self.product_weight_input, product_weight)
-
-        # # fill quantity and search engine optimize
-        # self.send_keys(self.product_quantity_input, product_quantity)
-        # self.send_keys(self.product_url_key_input, product_url_key)
-        # self.send_keys(self.product_meta_title_input, product_meta_title)
         
-
     @allure.step("Save product")
     def click_save_btn(self):
         self.click(self.save_btn)
+
+    @allure.step("Cancel create product")
+    def click_cancel_btn(self):
+        self.click(self.cancel_btn)
 
     @allure.step("Check success message visible")
     def is_success_displayed(self):
@@ -260,6 +213,18 @@ class ProductsPage(BasePage, BaseLocator):
     def redirect_to_edit_page(self):
         return self.wait_for_redirect_edit_page(
             expected_url_part="/products/edit")
+    
+    
+    @allure.step("Verify redirect to edit page after submit")
+    def create_product_with_required_fields(self, name, sku, price, weight, quantity, url_key, meta_title):
+        self.enter_product_name(name)
+        self.enter_product_sku(sku)
+        self.enter_product_price(price)
+        self.enter_product_weight(weight)
+        self.enter_product_quantity(quantity)
+        self.enter_product_url_key(url_key)
+        self.enter_product_meta_title(meta_title)
+
 
     @allure.step("Verify SKU Uniqueness Validation")
     def verify_sku_uniqueness(self):
