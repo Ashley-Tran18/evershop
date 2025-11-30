@@ -28,14 +28,14 @@ class TestProducts(BaseTest):
         rows = self.product_page.get_table_rows()
         assert len(rows) > 0, "No products found in the list"
 
-    # @allure.title("TC005 - Search Product by Name")
-    # def test_search_product(self):
-    #     keyword = ConfigReader.get_product_data()["product_name"]
-    #     self.product_page.search_product(keyword)
-    #     rows = self.product_page.get_product_name_column()
-    #     for row in rows:
-    #         assert keyword.lower() in row.text.lower()
-    # #         # self.driver.save_screenshot("search_product.png")
+    @allure.title("TC005 - Search Product by Name")
+    def test_search_product(self):
+        keyword = ConfigReader.get_product_name("normal")
+        self.product_page.search_product(keyword)
+        rows = self.product_page.get_product_name_column()
+        for row in rows:
+            assert keyword.lower() in row.text.lower()
+    #         # self.driver.save_screenshot("search_product.png")
 
    
        

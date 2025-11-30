@@ -48,14 +48,14 @@
       }
       ,
         "product_sku": "SKU0001",
-        "product_price": "199.99",
-        "product_weight": "2",
-        "product_description": "High quality sofa.",
-        "product_image":"sofa.png",
-        "product_quantity": "10",
+        "product_price": "3999",
+        "product_weight": "1",
+        "product_description": "ShirtAdidas Premium Essentials Padded Jacket BlueIY2283 is a fashionable and functional product from Adidas",
+        "product_image":"Premium-Jacket-Blue.png",
+        "product_quantity": "100",
         "product_url_key": "sofa-luxury-set-0001",
         "product_meta_title": "Sofa Luxury Set",
-        "product_meta_description": "product meta description Sofa Luxury Set"
+        "product_meta_description": "Product information adidas Premium Essentials Padded Jacket – Blue"
     },
 "category_data":{
     "category_name": "Furniture",

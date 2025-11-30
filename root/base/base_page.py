@@ -87,6 +87,16 @@ class BasePage:
         #     return self.driver.find_elements(*locator)
         # except TimeoutException:
         #     return []
+    @allure.step("Find first row containing text: {text}")
+    def find_row_contains(self, rows, text: str):
+        text = text.lower().strip()
+        # Sử dụng logic tối ưu hóa (list comprehension)
+        selected_row = next((
+            row for row in rows
+            if text in row.get_attribute("innerText").lower().strip()
+        ), None)
+        return selected_row
+
 
     # ------------------------------------------------------------------ #
     # INTERACTIONS

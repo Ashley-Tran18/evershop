@@ -12,6 +12,7 @@ class ProductFactory:
         
         return {
             # 'name': product_data['product_name'],
+            # 'name': valid_product_name,
             'name': f"{valid_product_name}_{timestamp}",
             'sku': f"TEST_{timestamp}",
             'price': product_data['product_price'],

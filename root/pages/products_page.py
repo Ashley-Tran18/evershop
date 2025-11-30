@@ -69,11 +69,23 @@ class ProductsPage(BasePage, BaseLocator):
 
     @allure.step("Get product table name column")
     def get_product_name_column(self):
+        print(f"DEBUG: Gọi find_elements với locator: {self.product_name_column}")
         return self.find_elements((self.product_name_column))
     
     @allure.step("Get product table rows")
     def get_table_rows(self):
         return self.find_elements((self.table_rows)) # Wait for table rows to be visible
+    
+    @allure.step("Find row that contains product name: {expected_name}")
+    def find_product_row_by_name(self, expected_name: str):
+        rows = self.get_product_name_column()
+        return self.find_row_contains(rows, expected_name)
+
+    @allure.step("Select a product to edit")
+    def select_product(self, row):
+        return self.click(row)
+      
+        
 
     # ======================================
     # 2. Create Products Page
@@ -185,7 +197,11 @@ class ProductsPage(BasePage, BaseLocator):
     @allure.step("Enter meta title")
     def enter_product_meta_title(self, meta_title):
         self.send_keys(self.product_meta_title_input, meta_title)
-        
+
+    @allure.step("Enter meta description")
+    def enter_product_meta_description(self, meta_description):
+        self.send_keys(self.product_meta_des_input, meta_description)
+
     @allure.step("Save product")
     def click_save_btn(self):
         self.click(self.save_btn)
@@ -203,10 +219,10 @@ class ProductsPage(BasePage, BaseLocator):
         return self.is_displayed(self.inline_error_msg)
 
     @allure.step("Verify product created successfully")
-    def verify_toast_message(self):
+    def verify_toast_success_message(self, expected_text):
         return self.wait_for_toast_message(
-            toast_locator=self.toast_msg,
-            toast_text="Product created successfully"
+            toast_locator = self.toast_msg,
+            toast_text = expected_text
         )
     
     @allure.step("Verify redirect to edit page after submit")
@@ -224,36 +240,6 @@ class ProductsPage(BasePage, BaseLocator):
         self.enter_product_quantity(quantity)
         self.enter_product_url_key(url_key)
         self.enter_product_meta_title(meta_title)
-
-
-    @allure.step("Verify SKU Uniqueness Validation")
-    def verify_sku_uniqueness(self):
-        return self.wait_for_toast_message(
-            toast_locator=self.toast_msg,
-            toast_text='Exception in middleware createProduct: duplicate key value violates unique constraint "PRODUCT_SKU_UNIQUE"'
-        )
-
-    @allure.step("Fill sku_uniqueness in Product form")
-    def fill_sku_uniqueness_in_product_form(self, product_data):
-        product_data = ConfigReader.get_product_data()
-        product_name = product_data['product_name']
-        product_sku = product_data['product_sku']
-        product_price = product_data['product_price']
-        product_weight = product_data['product_weight']
-        product_quantity = product_data['product_quantity']
-        product_url_key = product_data['product_url_key']
-        product_meta_title = product_data['product_meta_title']
-     
-        # fill general form
-        self.send_keys(self.product_name_input, product_name)
-        self.send_keys(self.product_sku_input, product_sku)
-        self.send_keys(self.product_price_input, product_price)
-        self.send_keys(self.product_weight_input, product_weight)
-
-        # fill quantity and search engine optimize
-        self.send_keys(self.product_quantity_input, product_quantity)
-        self.send_keys(self.product_url_key_input, product_url_key)
-        self.send_keys(self.product_meta_title_input, product_meta_title)
         
     @allure.step("Select color attribute") 
     def select_color(self):   
@@ -266,10 +252,7 @@ class ProductsPage(BasePage, BaseLocator):
         self.click(self.product_men_category)
 
     @allure.step("Add description") 
-    def add_description(self, product_data): 
-        product_data = ConfigReader.get_product_data()
-        product_description = product_data['product_description']
-        # select and fill quotes description
+    def add_description(self, product_description): 
         self.click(self.product_des_type)
         self.click(self.product_available_block_1)
         self.click(self.product_des_type_plus_1)    
@@ -282,14 +265,14 @@ class ProductsPage(BasePage, BaseLocator):
         self.click(self.product_des_type_plus_2)
         self.click(self.product_des_rawhtml_select)
         self.send_keys(self.product_rawhtml_input, product_description)
-
-
+    
+    @allure.step("Back to product listing page") 
+    def back_to_product_page(self):
+        self.click(self.edit_back_btn)
   
-   
 
-    # def back_to_product_page(self):
-    #     "Back to the product listing page"
-    #     self.wait_and_click(self.edit_product_back_btn)
+
+    
        
         
     # def verify_new_product_added(self, expected_name):
@@ -297,3 +280,32 @@ class ProductsPage(BasePage, BaseLocator):
     #     expected_name = ConfigReader.get_product_data()['product_name']
     #     print(f"🔍 Verifying new product: {expected_name}")
     #     return self.verify_record_added(expected_name, self.product_table)
+
+    # @allure.step("Verify SKU Uniqueness Validation")
+    # def verify_sku_uniqueness(self):
+    #     return self.wait_for_toast_message(
+    #         toast_locator=self.toast_msg,
+    #         toast_text='Exception in middleware createProduct: duplicate key value violates unique constraint "PRODUCT_SKU_UNIQUE"'
+    #     )
+
+    # @allure.step("Fill sku_uniqueness in Product form")
+    # def fill_sku_uniqueness_in_product_form(self, product_data):
+    #     product_data = ConfigReader.get_product_data()
+    #     product_name = product_data['product_name']
+    #     product_sku = product_data['product_sku']
+    #     product_price = product_data['product_price']
+    #     product_weight = product_data['product_weight']
+    #     product_quantity = product_data['product_quantity']
+    #     product_url_key = product_data['product_url_key']
+    #     product_meta_title = product_data['product_meta_title']
+     
+    #     # fill general form
+    #     self.send_keys(self.product_name_input, product_name)
+    #     self.send_keys(self.product_sku_input, product_sku)
+    #     self.send_keys(self.product_price_input, product_price)
+    #     self.send_keys(self.product_weight_input, product_weight)
+
+    #     # fill quantity and search engine optimize
+    #     self.send_keys(self.product_quantity_input, product_quantity)
+    #     self.send_keys(self.product_url_key_input, product_url_key)
+    #     self.send_keys(self.product_meta_title_input, product_meta_title)
