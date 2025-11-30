@@ -1,1 +1,0 @@
-DEBUG: Gọi find_elements với locator: ('xpath', '//tbody/tr/td[3]//a')
