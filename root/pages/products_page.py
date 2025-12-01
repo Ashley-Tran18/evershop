@@ -243,18 +243,21 @@ class ProductsPage(BasePage, BaseLocator):
         
     @allure.step("Select color attribute") 
     def select_color(self):   
-        self.click(self.product_color_list)
-        self.click(self.product_color_option)
+        self.select_by_visible_text(self.product_color_list, "Black")
+        self._screenshot(f"clicked_{1}")
 
     @allure.step("Select category") 
     def select_category(self): 
         self.click(self.select_product_category)
         self.click(self.product_men_category)
+        self._screenshot(f"clicked_{2}")
 
     @allure.step("Add description") 
     def add_description(self, product_description): 
         self.click(self.product_des_type)
+        self._screenshot(f"clicked_{3}")
         self.click(self.product_available_block_1)
+        self._screenshot(f"clicked_{4}")
         self.click(self.product_des_type_plus_1)    
         self.click(self.product_des_quote_select)     
         self.send_keys(self.product_quote_input, product_description)

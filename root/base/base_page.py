@@ -103,19 +103,39 @@ class BasePage:
     # ------------------------------------------------------------------ #
     @allure.step("Click {locator}")
     def click(self, locator, timeout: int = None):
-            element = WebDriverWait(self.driver, timeout or self.timeout).until(
+            # element = WebDriverWait(self.driver, timeout or self.timeout).until(
+            #     EC.element_to_be_clickable(locator)
+            # )
+            # element.click()
+        try:
+            
+            WebDriverWait(self.driver, timeout or self.timeout).until(
                 EC.element_to_be_clickable(locator)
             )
+            element = self.scroll_to_element(locator)
             element.click()
-        # try:
-        #     element = WebDriverWait(self.driver, timeout or self.timeout).until(
-        #         EC.element_to_be_clickable(locator)
-        #     )
-        #     element.click()
-        #     self._screenshot(f"clicked_{locator}")
-        # except TimeoutException:
-        #     self._screenshot(f"click_fail_{locator}")
-        #     raise
+            self._screenshot(f"clicked_{locator}")
+        except TimeoutException:
+            self._screenshot(f"click_fail_{locator}")
+            raise
+
+
+    def scroll_to_element(self, locator):
+        element = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(locator)
+        )
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        return element
+
+    # def scroll_and_click(self, locator):
+    #     # element = self.scroll_to_element(locator)
+    #     # Đợi click được
+    #     WebDriverWait(self.driver, 10).until(
+    #         EC.element_to_be_clickable(locator)
+    #     )
+    #     element.click()
+
+
 
     @allure.step("Type '{text}' into {locator}")
     def send_keys(self, locator, text:str):
