@@ -28,6 +28,7 @@ class BaseTest:
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--disable-gpu')  # Thêm để ổn định headless
         options.add_argument('--disable-features=VizDisplayCompositor')  # Fix lỗi render
+        options.add_argument("--window-size=1920,1080")
         
         self.driver = webdriver.Chrome(service=Service(), options=options)
         
