@@ -10,6 +10,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import re
 from datetime import datetime
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 
 
@@ -101,29 +103,56 @@ class BasePage:
     # ------------------------------------------------------------------ #
     # INTERACTIONS
     # ------------------------------------------------------------------ #
-    @allure.step("Click {locator}")
-    def click(self, locator, timeout: int = None):
-            # element = WebDriverWait(self.driver, timeout or self.timeout).until(
-            #     EC.element_to_be_clickable(locator)
-            # )
-            # element.click()
-        try:
+    # @allure.step("Click {locator}")
+    # def click(self, locator, timeout: int = None):
+    #         # element = WebDriverWait(self.driver, timeout or self.timeout).until(
+    #         #     EC.element_to_be_clickable(locator)
+    #         # )
+    #         # element.click()
+    #     try:
             
-            WebDriverWait(self.driver, timeout or self.timeout).until(
-                EC.element_to_be_clickable(locator)
+    #         WebDriverWait(self.driver, timeout or self.timeout).until(
+    #             EC.element_to_be_clickable(locator)
+    #         )
+    #         element = self.scroll_to_element(locator)
+    #         element.click()
+    #         self._screenshot(f"clicked_{locator}")
+    #     except TimeoutException:
+    #         self._screenshot(f"click_fail_{locator}")
+    #         raise
+
+
+    # def scroll_to_element(self, locator):
+    #     element = WebDriverWait(self.driver, 10).until(
+    #         EC.visibility_of_element_located(locator)
+    #     )
+    #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+    #     return element
+
+
+    @allure.step("Click on element")
+    def click(self, locator_or_element, timeout: int = None):
+        timeout = timeout or self.timeout
+
+        if isinstance(locator_or_element, WebElement):
+            element = locator_or_element
+        else:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(locator_or_element)
             )
-            element = self.scroll_to_element(locator)
-            element.click()
-            self._screenshot(f"clicked_{locator}")
-        except TimeoutException:
-            self._screenshot(f"click_fail_{locator}")
-            raise
 
+        self.scroll_to_element_by_element(element)
+        element.click()
+        self._screenshot(f"clicked_{locator_or_element}")
 
+    def scroll_to_element_by_element(self, element: WebElement):
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        
+        return element
+
+    # Keep the old one for locator-based usage
     def scroll_to_element(self, locator):
-        element = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(locator)
-        )
+        element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(locator))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
         return element
 
