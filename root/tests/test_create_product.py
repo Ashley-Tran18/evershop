@@ -6,6 +6,7 @@ from utils.config_reader import ConfigReader
 import allure
 import pytest
 from time import sleep
+import time
 
 
 @allure.epic("E-commerce Admin")
@@ -13,7 +14,7 @@ from time import sleep
 class TestCreateProducts(BaseTest):
     
     @pytest.fixture(scope="function", autouse=True)
-    def setup(self):
+    def setup(self, request):
         """Fixture to login and navigate to Create Product page before each test."""
         login = ProductsPage(self.driver)
         login.login()
@@ -22,9 +23,14 @@ class TestCreateProducts(BaseTest):
         self.create_product_page.click_new_product()
         self.create_product_page.wait_for_new_product_form()
 
-        # KHỞI TẠO DỮ LIỆU và lưu vào self.
-        product_data = ProductFactory.create_simple_product()
-        self.product_data = product_data
+        # KHỞI TẠO DỮ LIỆU và lưu vào self.  
+        # Get scenario from marker or use default
+        self.scenario = getattr(request, "param", {}).get("scenario", "normal")
+        
+        # Create product data as scenario
+        product_data = ProductFactory.create_product(scenario=self.scenario)
+
+        # Store all required attributes in self.
         self.name = product_data['name']
         self.sku = product_data['sku']
         self.price = product_data['price']
@@ -33,12 +39,10 @@ class TestCreateProducts(BaseTest):
         self.url_key = product_data['url_key']
         self.meta_title = product_data['meta_title']
 
-        product_data = ConfigReader.get_product_data()
-        self.product_name = product_data['product_name']
-        self.product_description = product_data['product_description']
-        self.product_image = product_data['product_image']
-        self.meta_des = product_data['product_meta_description']
-
+        # Fields that are optional → use product_data.get('field', default)
+        self.meta_description = product_data.get('meta_description', '')
+        self.description = product_data.get('description', '')
+        self.image = product_data.get('image', '')
 
     @allure.title("TC001 - Open New Product Form")
     def test_open_create_product_form(self):
@@ -77,7 +81,7 @@ class TestCreateProducts(BaseTest):
     # ======================================
     # Verify Inventory UI Elements
     # ======================================
-    @allure.title("VTC005 - erify Inventory Management Fields")
+    @allure.title("VTC005 - Verify Inventory Management Fields")
     def test_inventory_management(self):
         assert self.create_product_page.is_manage_stock_yes_selected()
         assert self.create_product_page.is_in_stock_availability_selected()
@@ -97,80 +101,141 @@ class TestCreateProducts(BaseTest):
     # ======================================
     @allure.title("TC007 - Verify Media upload function")
     def test_media_upload(self):
-        image = ConfigReader.get_product_image()
-        self.create_product_page.upload_image(image)
+        self.create_product_page.upload_image(self.image)
         assert self.create_product_page.is_image_uploaded()
         self.create_product_page.remove_image()
 
 
-    @allure.title("TC008 - Create Product with required Fields") 
+    @allure.title("TC008 - Create Product with required Fields - {scenario}")
+    @allure.title("Create Product - {marker}")
+    @pytest.mark.parametrize("setup", [
+    pytest.param({"scenario": "normal"},        marks=pytest.mark.normal),
+    pytest.param({"scenario": "max_length"},    marks=pytest.mark.max_length),
+    pytest.param({"scenario": "special_chars"}, marks=pytest.mark.special_chars),
+    pytest.param({"scenario": "with_emoji"},    marks=pytest.mark.emoji),
+], indirect=True)
     def test_create_product_with_required_fields(self):
+        # Form validation
         self.create_product_page.click_save_btn()
         assert self.create_product_page.is_inline_error_message_displayed() # Show empty required fields
+        
+        # Fill in product data (auto-generate unique values + match the selected scenario).
         self.create_product_page.create_product_with_required_fields(self.name,
             self.sku, self.price, self.weight, self.quantity, self.url_key, self.meta_title)
-        self.create_product_page.select_color()
+        
+        self.create_product_page.select_color("Black")
         self.create_product_page.click_save_btn()
         assert self.create_product_page.verify_toast_success_message(expected_text="Product created successfully")
         assert self.create_product_page.redirect_to_edit_page()
+        # Bonus: Log product to debug easily
+        allure.attach(f"Created product: {self.name}\nSKU: {self.sku}", name="Product Info", attachment_type=allure.attachment_type.TEXT)
+
 
     @allure.title("TC009 - Verify Cancel button works")
     def test_cancel_button(self):
         self.create_product_page.create_product_with_required_fields(self.name,
             self.sku, self.price, self.weight, self.quantity, self.url_key, self.meta_title)
-        self.create_product_page.select_color()
+        self.create_product_page.select_color("Black")
         self.create_product_page.click_cancel_btn()
         assert self.create_product_page.get_create_product_title_text()
 
     
     @allure.title("TC010 - Create a product filling all available fields (General, Media, Search Engine Optimize, Inventory, Attributes)") 
+    @pytest.mark.parametrize("setup", [
+    pytest.param({"scenario": "normal"},        marks=pytest.mark.normal),
+    # pytest.param({"scenario": "max_length"},    marks=pytest.mark.max_length),
+    # pytest.param({"scenario": "special_chars"}, marks=pytest.mark.special_chars),
+    # pytest.param({"scenario": "with_emoji"},    marks=pytest.mark.emoji),
+], indirect=True)
     def test_create_product(self):
         self.create_product_page.wait_for_new_product_form()
         self.create_product_page.create_product_with_required_fields(self.name,
             self.sku, self.price, self.weight, self.quantity, self.url_key, self.meta_title)
         self.create_product_page.select_category()
-        self.create_product_page.add_description(self.product_description)
-        self.create_product_page.select_color()
-        self.create_product_page.upload_image(self.product_image)
-        self.create_product_page.enter_product_meta_description(self.meta_des)
+        self.create_product_page.add_description(self.description)
+        self.create_product_page.select_color("Black")
+        self.create_product_page.upload_image(self.image)
+        self.create_product_page.enter_product_meta_description(self.meta_description)
         self.create_product_page.click_save_btn()
         assert self.create_product_page.verify_toast_success_message(expected_text="Product created successfully")
         assert self.create_product_page.redirect_to_edit_page()
+        # Bonus: Log product to debug easily
+        allure.attach(f"Created product: {self.name}\nSKU: {self.sku}", name="Product Info", attachment_type=allure.attachment_type.TEXT)
 
 
     @allure.title("TC011 - Add more info after summitted product form") 
+    @pytest.mark.parametrize("setup", [
+    # pytest.param({"scenario": "normal"},        marks=pytest.mark.normal),
+    # pytest.param({"scenario": "max_length"},    marks=pytest.mark.max_length),
+    # pytest.param({"scenario": "special_chars"}, marks=pytest.mark.special_chars),
+    pytest.param({"scenario": "with_emoji"},    marks=pytest.mark.emoji),
+], indirect=True)
     def test_create_product_with_more_info(self):
         self.create_product_page.create_product_with_required_fields(self.name, 
             self.sku, self.price, self.weight, self.quantity, self.url_key, self.meta_title)
-        self.create_product_page.select_color()
+        self.create_product_page.select_color("White")
         self.create_product_page.click_save_btn()
         assert self.create_product_page.verify_toast_success_message(expected_text="Product created successfully")
         assert self.create_product_page.redirect_to_edit_page()
         self.create_product_page.select_category()
-        self.create_product_page.add_description(self.product_description)
-        self.create_product_page.upload_image(self.product_image)
-        self.create_product_page.enter_product_meta_description(self.meta_des)
+        self.create_product_page.add_description(self.description)
+        self.create_product_page.upload_image(self.image)
+        self.create_product_page.enter_product_meta_description(self.meta_description)
         self.create_product_page.click_save_btn()
         assert self.create_product_page.verify_toast_success_message(expected_text="Product updated successfully")
-        
+         # Bonus: Log product to debug easily
+        allure.attach(f"Created product: {self.name}\nSKU: {self.sku}", name="Product Info", attachment_type=allure.attachment_type.TEXT)
+
 
     @allure.title("TC012 - Edit product") 
-    def test_find_product_to_edit(self):
+    @pytest.mark.parametrize("setup, product_data", [
+    pytest.param(
+        {"scenario": "normal"},
+        {"name": "Test Product Normal ", "suffix": "UPDATED",
+        "sku": f"TEST_SKU_UPDATED-{int(time.time())}"},
+        marks=pytest.mark.normal,
+        id="normal"
+    ),
+], indirect=["setup"])
+    def test_find_product_to_edit(self, product_data):
+        # Step 1: Go back to product list
         self.create_product_page.back_to_product_page()
-        expected_name = ConfigReader.get_product_name("normal")
+
+        # Original name was saved during creation in fixture (self.name)
+        self.original_name = self.name  # This is the name used when the product was created
+        self.new_name = product_data["name"] + product_data["suffix"]
+        self.new_sku = product_data["sku"] 
+        self.price = "999"
+        self.weight = "5.9"
+        self.quantity = "1000"
+
+       # Step 2: Find the product by original name
         product_page = ProductsPage(self.driver)
         product_page.wait_for_page_loaded()
-        selected_row = product_page.find_product_row_by_name(expected_name)
-        assert selected_row is not None, f"Không tìm thấy sản phẩm có tên chứa: {expected_name}"
+        selected_row = product_page.find_product_row_by_name(self.original_name)
+        assert selected_row is not None, f"No product found: {self.original_name}"
         product_page.select_product(selected_row)
 
+       # Step 3: Edit the product with updated data
+        self.create_product_page.edit_product_with_required_fields(
+            name = self.new_name, 
+            sku = self.new_sku, 
+            price = self.price,
+            weight = self.weight, 
+            quantity = self.quantity, 
+            url_key = self.url_key, 
+            meta_title = self.meta_title)
+        self.create_product_page.select_color("White")
+        self.create_product_page.click_save_btn()
+        assert self.create_product_page.verify_toast_success_message(expected_text="Product updated successfully")
 
-    @allure.title("TC010 - Product Name Accepts Valid Characters & Max Length")
-    def test_product_name_validations(self):
-        name = ConfigReader.get_product_name("normal")
-        self.create_product_page.enter_product_name(name)
-        filled_value = self.create_product_page.get_product_name_value()
-        assert filled_value == name, f"Expected name '{name}', but got '{filled_value}'"
+        # Step 4: Go back and verify the edited product appears with new name
+        self.create_product_page.back_to_product_page()
+
+        # Search by full edited name or part of it
+        edited_row = product_page.find_product_row_by_name(self.new_name)
+        assert edited_row is not None, f"No product found: {self.new_name}"
+
 
    
     # @allure.title("TC013 - SKU Uniqueness Validation")
@@ -188,4 +253,3 @@ class TestCreateProducts(BaseTest):
     # # def test_add_product_description(self):
 
        
-    

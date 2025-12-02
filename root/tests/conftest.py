@@ -11,7 +11,6 @@ def pytest_runtest_makereport(item, call):
     rep = outcome.get_result()
     print(f"Test  {item.name} - {rep.when} - {rep.outcome}")
     setattr(item, f"rep_{rep.when}", rep)
-    #setattr(item, "rep_call", rep)
 
 def pytest_exception_interact(node, call, report):
     driver = getattr(node.instance, "driver", None)
@@ -25,4 +24,20 @@ def pytest_exception_interact(node, call, report):
             )
         except Exception as e:
             print(f"[!] Cannot capture screenshot: {e}")
+
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "normal: Regular valid input scenario"
+    )
+    config.addinivalue_line(
+        "markers", "max_length: Test with maximum allowed length values"
+    )
+    config.addinivalue_line(
+        "markers", "special_chars: Test with special characters in fields"
+    )
+    config.addinivalue_line(
+        "markers", "emoji: Test with emoji in product name/description"
+    )
 

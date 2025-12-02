@@ -37,26 +37,61 @@
     "collection_code": "colection_code_11",
     "collection_des": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
 },
-
-"product_data":
+ "product_data": [
     {
-      "product_name": {
-        "max_length": "Apart from counting words and characters, our online editor can help you to improve word choice and writing style, and, optionally, help you to detect grammar mistakes and plagiarism. To check word count, simply place your cursor into the text box above a",
-        "special_chars": "Men's Jacket & Special 'Chars' 2025! \"<>{}[];:/",
-        "with_emoji": "Winter Jacket 2025 ₊✩‧₊˚౨ৎ˚₊✩‧₊ 😁",
-        "normal": "Blue Jacket Premium"
-      }
-      ,
-        "product_sku": "SKU0001",
-        "product_price": "3999",
-        "product_weight": "1",
-        "product_description": "ShirtAdidas Premium Essentials Padded Jacket BlueIY2283 is a fashionable and functional product from Adidas",
-        "product_image":"Premium-Jacket-Blue.png",
-        "product_quantity": "100",
-        "product_url_key": "sofa-luxury-set-0001",
-        "product_meta_title": "Sofa Luxury Set",
-        "product_meta_description": "Product information adidas Premium Essentials Padded Jacket – Blue"
+      "scenario": "normal",
+      "product_name": "Blue Jacket Premium",
+      "sku_base": "JACKET001",
+      "price": "3999",
+      "weight": "1.2",
+      "description": "Classic blue premium jacket from Adidas collection.",
+      "image": "Premium-Jacket-Blue.png",
+      "quantity": "100",
+      "url_key": "blue-jacket-premium",
+      "meta_title": "Blue Jacket Premium - Winter 2025",
+      "meta_description": "High-quality padded jacket for winter."
     },
+    {
+      "scenario": "max_length",
+      "product_name": "This is an extremely long product name to test the maximum allowed length in the system database and frontend rendering with over two hundred characters to ensure no truncation occurs during save or display operations in the admin panel and customer storefront",
+      "sku_base": "LONG001",
+      "price": "4599",
+      "weight": "1.5",
+      "description": "Long name product for boundary testing.",
+      "image": "long-name-jacket.png",
+      "quantity": "50",
+      "url_key": "very-long-product-name-boundary-test",
+      "meta_title": "Very Long Product Name - Boundary Test Case",
+      "meta_description": "Testing maximum character limits in product name field."
+    },
+    {
+      "scenario": "special_chars",
+      "product_name": "Men's Jacket & \"Special\" Chars '2025'! < > [ ] { } | \\ / ? * : ; @ # $ % ^ ",
+      "sku_base": "SPECIAL001",
+      "price": "4999",
+      "weight": "1.3",
+      "description": "<p>Product designed to test HTML sanitization and escaping.</p><p><strong>This product validates:</strong></p><ol><li>Proper escaping of double quotes &amp; special characters</li><li>Safe handling of &lt;script&gt; attempts (they will be stripped)</li><li>Correct rendering of &amp;, ', !, @, #, $, %, ^ etc.</li><li>URL key and meta fields remain clean</li><li>No XSS vulnerabilities introduced</li></ol><p>All dangerous characters are safely neutralized on save.</p>",
+      "image": "special-chars-jacket.png",
+      "quantity": "75",
+      "url_key": "mens-jacket-special-chars-2025",
+      "meta_title": "Men's Jacket & \"Special\" Chars 2025!",
+      "meta_description": "Test encoding, escaping and sanitization."
+    },
+    {
+      "scenario": "with_emoji",
+      "product_name": "Winter Jacket 2025 🤶 🧑‍🎄 🎅",
+      "sku_base": "EMOJI001",
+      "price": "5299",
+      "weight": "1.4",
+      "description": "Winter jacket with full emoji and Unicode support.",
+      "image": "winter-emoji-jacket.png",
+      "quantity": "200",
+      "url_key": "winter-jacket-2025-emoji",
+      "meta_title": "Winter Jacket 2025 - New Arrival",
+      "meta_description": "Stay warm and stylish with emojis!"
+    }
+  ]
+,
 "category_data":{
     "category_name": "Furniture",
     "category_description": "Furniture is categorized by function, such as seating (chairs, sofas), sleeping (beds, futons), storage (cabinets, bookshelves), and tables/desks, or by location, like living room, bedroom, or outdoor. ",

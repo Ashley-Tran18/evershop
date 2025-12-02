@@ -84,6 +84,7 @@ class ProductsPage(BasePage, BaseLocator):
     @allure.step("Select a product to edit")
     def select_product(self, row):
         return self.click(row)
+        
       
         
 
@@ -240,24 +241,30 @@ class ProductsPage(BasePage, BaseLocator):
         self.enter_product_quantity(quantity)
         self.enter_product_url_key(url_key)
         self.enter_product_meta_title(meta_title)
+
+    @allure.step("Verify redirect to edit page after submit")
+    def edit_product_with_required_fields(self, name, sku, price, weight, quantity, url_key, meta_title):
+        self.enter_product_name(name)
+        self.enter_product_sku(sku)
+        self.enter_product_price(price)
+        self.enter_product_weight(weight)
+        self.enter_product_quantity(quantity)
+        self.enter_product_url_key(url_key)
+        self.enter_product_meta_title(meta_title)
         
     @allure.step("Select color attribute") 
-    def select_color(self):   
-        self.select_by_visible_text(self.product_color_list, "Black")
-        self._screenshot(f"clicked_{1}")
-
+    def select_color(self, color):   
+        self.select_by_visible_text(self.product_color_list, color)
+        
     @allure.step("Select category") 
     def select_category(self): 
         self.click(self.select_product_category)
         self.click(self.product_men_category)
-        self._screenshot(f"clicked_{2}")
-
+      
     @allure.step("Add description") 
     def add_description(self, product_description): 
         self.click(self.product_des_type)
-        self._screenshot(f"clicked_{3}")
         self.click(self.product_available_block_1)
-        self._screenshot(f"clicked_{4}")
         self.click(self.product_des_type_plus_1)    
         self.click(self.product_des_quote_select)     
         self.send_keys(self.product_quote_input, product_description)

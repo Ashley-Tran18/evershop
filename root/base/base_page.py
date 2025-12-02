@@ -140,57 +140,60 @@ class BasePage:
             element = WebDriverWait(self.driver, timeout).until(
                 EC.element_to_be_clickable(locator_or_element)
             )
-
         self.scroll_to_element_by_element(element)
         element.click()
-        self._screenshot(f"clicked_{locator_or_element}")
+        # self._screenshot(f"clicked_{locator_or_element}")
 
     def scroll_to_element_by_element(self, element: WebElement):
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
-        
         return element
 
-    # Keep the old one for locator-based usage
-    def scroll_to_element(self, locator):
-        element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(locator))
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
-        return element
 
-    # def scroll_and_click(self, locator):
-    #     # element = self.scroll_to_element(locator)
-    #     # Đợi click được
-    #     WebDriverWait(self.driver, 10).until(
-    #         EC.element_to_be_clickable(locator)
-    #     )
-    #     element.click()
-
-
+    # @allure.step("Type '{text}' into {locator}")
+    # def send_keys(self, locator, text:str):
+    #     el = self.wait_for_visible(locator)
+    #     el.clear()
+    #     el.send_keys(text)
 
     @allure.step("Type '{text}' into {locator}")
-    def send_keys(self, locator, text:str):
+    def send_keys(self, locator, text: str, clear_first: bool = True):
+        """
+        Smart send_keys:
+        - If text contains non-BMP characters (real emojis) → use JavaScript
+        - Otherwise → use normal send_keys (faster + triggers all events properly)
+        """
         el = self.wait_for_visible(locator)
-        el.clear()
-        el.send_keys(text)
 
-    @staticmethod
-    def remove_non_bmp(text: str) -> str:
-        """
-        Loại bỏ ký tự có codepoint > 0xFFFF (những ký tự ngoài BMP như nhiều emoji).
-        Cách an toàn: giữ các ký tự có ord <= 0xFFFF.
-        """
-        if text is None:
-            return text
-        return ''.join(c for c in text if ord(c) <= 0xFFFF)
-    
-    def send_keys_remove_non_bmp(self, locator, text, clear_first=True):
-        """
-        Gồm bước: lọc ký tự ngoài BMP -> clear input -> send_keys
-        """
-        safe_text = self.remove_non_bmp(text)
-        elem = WebDriverWait(self.driver, self.timeout).until(EC.visibility_of_element_located(locator))
         if clear_first:
-            elem.clear()
-        elem.send_keys(safe_text)
+            el.clear()
+
+        # Check if text contains any character outside BMP (i.e. real emojis)
+        has_non_bmp = any(ord(c) > 0xFFFF for c in text)
+
+        if has_non_bmp:
+            # Use JavaScript to bypass ChromeDriver BMP limitation
+            self.driver.execute_script("""
+                var elem = arguments[0];
+                var value = arguments[1];
+                elem.value = value;
+                
+                // Trigger React/virtualized inputs (like in EverShop)
+                ['input', 'change', 'keydown', 'keyup'].forEach(eventType => {
+                    elem.dispatchEvent(new Event(eventType, { bubbles: true }));
+                });
+                
+                // For React 16/17+ - also update internal state
+                var reactProps = Object.keys(elem).find(key => key.startsWith('__reactProps'));
+                if (reactProps) {
+                    var onChange = elem[reactProps]?.onChange;
+                    if (onChange) {
+                        onChange({ target: elem });
+                    }
+                }
+            """, el, text)
+            allure.attach(f"Used JS to set value with emojis: {text}", name="send_keys_method", attachment_type=allure.attachment_type.TEXT)
+        else:
+            el.send_keys(text)
 
 
     @allure.step("Get text of {locator}")

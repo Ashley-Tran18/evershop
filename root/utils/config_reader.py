@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Any
+from typing import Dict, List, Optional
 
 class ConfigReader:
     _config = None
@@ -48,14 +49,12 @@ class ConfigReader:
         config = ConfigReader.load_config()
         return config["error_messages"][key]
 
-    @staticmethod
-    def get_collection_data():
-        return ConfigReader.load_config()['collection_data']
+   
     
-    @staticmethod
-    def get_product_data():
-        return ConfigReader.load_config()['product_data']
-    
+# ======================================
+    # @staticmethod
+    # def get_product_data():
+    #     return ConfigReader.load_config()['product_data']
    
     # @staticmethod
     # def get_product_name(scenario: str = "normal") -> str:
@@ -66,16 +65,34 @@ class ConfigReader:
     #         raise KeyError(f"Không tìm thấy product_name cho scenario '{scenario}'. "
     #                     f"Các scenario có sẵn: {list(config['product_data']['product_name'].keys())}") from e
     
+    # @staticmethod
+    # def get_product_name(scenario: str = "normal") -> str:
+    #     config = ConfigReader.load_config()
+    #     return config["product_data"]["product_name"][scenario]
+# ======================================
     @staticmethod
-    def get_product_name(scenario: str = "normal") -> str:
-        config = ConfigReader.load_config()
-        return config["product_data"]["product_name"][scenario]
+    def get_all_product_templates() -> List[Dict]:
+        return ConfigReader.load_config().get('product_data', [])
     
+    @staticmethod
+    def get_product_template(scenario:str) -> Optional[Dict]:
+        templates = ConfigReader.get_all_product_templates()
+        for template in templates:
+            if template.get('scenario') == scenario:
+                return template
+        print(f"[WARNING] Available scenarios: {[t.get('scenario') for t in templates]}")
+        raise ValueError(f"Scenario '{scenario}' not found in product_data.json")
+
+
     @staticmethod
     def get_product_image():
         config = ConfigReader.load_config()
         return config['product_data']['product_image']
         
+   
+    @staticmethod
+    def get_collection_data():
+        return ConfigReader.load_config()['collection_data']
 
     @staticmethod
     def get_category_data():
