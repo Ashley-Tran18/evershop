@@ -159,6 +159,7 @@ class ProductsPage(BasePage, BaseLocator):
         file_input = self.wait_for_presence(self.product_upload_image)
         file_input.send_keys(image_path)
         self.wait_for_upload_complete(self.product_uploaded_image)
+        self._screenshot(f"clicked_{12}")
 
     @allure.step("Check if image is uploaded")
     def is_image_uploaded(self):
@@ -260,21 +261,32 @@ class ProductsPage(BasePage, BaseLocator):
     def select_category(self): 
         self.click(self.select_product_category)
         self.click(self.product_men_category)
+        # self._screenshot(f"clicked_{1}")
       
     @allure.step("Add description") 
     def add_description(self, product_description): 
         self.click(self.product_des_type)
+        # self._screenshot(f"clicked_{2}")
         self.click(self.product_available_block_1)
-        self.click(self.product_des_type_plus_1)    
-        self.click(self.product_des_quote_select)     
+        # self._screenshot(f"clicked_{3}")
+        self.click(self.product_des_type_plus_1)  
+        # self._screenshot(f"clicked_{4}")  
+        self.click(self.product_des_quote_select) 
+        # self._screenshot(f"clicked_{5}")    
         self.send_keys(self.product_quote_input, product_description)
+        # self._screenshot(f"clicked_{6}")
         self.send_keys(self.product_quote_caption_input, product_description)
+        # self._screenshot(f"clicked_{7}")
 
         # select and fill raw HTML description
         self.click(self.product_available_block_2)
+        # self._screenshot(f"clicked_{8}")
         self.click(self.product_des_type_plus_2)
+        # self._screenshot(f"clicked_{9}")
         self.click(self.product_des_rawhtml_select)
+        # self._screenshot(f"clicked_{10}")
         self.send_keys(self.product_rawhtml_input, product_description)
+        # self._screenshot(f"clicked_{11}")
     
     @allure.step("Back to product listing page") 
     def back_to_product_page(self):

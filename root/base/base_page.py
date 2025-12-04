@@ -155,45 +155,108 @@ class BasePage:
     #     el.clear()
     #     el.send_keys(text)
 
-    @allure.step("Type '{text}' into {locator}")
-    def send_keys(self, locator, text: str, clear_first: bool = True):
+    # @allure.step("Type '{text}' into {locator}")
+    # def send_keys(self, locator, text: str, clear_first: bool = True):
+    #     """
+    #     Smart send_keys:
+    #     - If text contains non-BMP characters (real emojis) → use JavaScript
+    #     - Otherwise → use normal send_keys (faster + triggers all events properly)
+    #     """
+    #     el = self.wait_for_visible(locator)
+
+    #     if clear_first:
+    #         el.clear()
+
+    #     # Check if text contains any character outside BMP (i.e. real emojis)
+    #     has_non_bmp = any(ord(c) > 0xFFFF for c in text)
+
+    #     if has_non_bmp:
+    #         # Use JavaScript to bypass ChromeDriver BMP limitation
+    #         self.driver.execute_script("""
+    #             var elem = arguments[0];
+    #             var value = arguments[1];
+    #             elem.value = value;
+                
+    #             // Trigger React/virtualized inputs (like in EverShop)
+    #             ['input', 'change', 'keydown', 'keyup'].forEach(eventType => {
+    #                 elem.dispatchEvent(new Event(eventType, { bubbles: true }));
+    #             });
+                
+    #             // For React 16/17+ - also update internal state
+    #             var reactProps = Object.keys(elem).find(key => key.startsWith('__reactProps'));
+    #             if (reactProps) {
+    #                 var onChange = elem[reactProps]?.onChange;
+    #                 if (onChange) {
+    #                     onChange({ target: elem });
+    #                 }
+    #             }
+    #         """, el, text)
+    #         allure.attach(f"Used JS to set value with emojis: {text}", name="send_keys_method", attachment_type=allure.attachment_type.TEXT)
+    #     else:
+    #         el.send_keys(text)
+
+    @allure.step("Type '{text}' into {locator}" + (" (clear first)" if "{clear_first}" else ""))
+    def send_keys(self, locator, text, clear_first: bool = True):
         """
-        Smart send_keys:
-        - If text contains non-BMP characters (real emojis) → use JavaScript
-        - Otherwise → use normal send_keys (faster + triggers all events properly)
+        Smart send_keys - cực kỳ robust, chấp nhận cả str, dict, tuple, object → ép về str trước
         """
+        # === ÉP KIỂU VỀ STR NGAY TỪ ĐẦU - FIX LỖI CHUNG ===
+        if not isinstance(text, str):
+            if hasattr(text, '__str__'):
+                text = str(text)
+            elif isinstance(text, (dict, list, tuple)):
+                text = str(text)  # hoặc json.dumps(text) nếu muốn đẹp
+            else:
+                text = str(text)
+
         el = self.wait_for_visible(locator)
 
         if clear_first:
-            el.clear()
+            try:
+                el.clear()
+            except Exception:
+                self.driver.execute_script("arguments[0].value = '';", el)
 
-        # Check if text contains any character outside BMP (i.e. real emojis)
+        # Bây giờ mới an toàn kiểm tra non-BMP
         has_non_bmp = any(ord(c) > 0xFFFF for c in text)
 
         if has_non_bmp:
-            # Use JavaScript to bypass ChromeDriver BMP limitation
             self.driver.execute_script("""
-                var elem = arguments[0];
-                var value = arguments[1];
+                const elem = arguments[0];
+                const value = arguments[1];
                 elem.value = value;
-                
-                // Trigger React/virtualized inputs (like in EverShop)
-                ['input', 'change', 'keydown', 'keyup'].forEach(eventType => {
-                    elem.dispatchEvent(new Event(eventType, { bubbles: true }));
+
+                ['input', 'keydown', 'keyup', 'change'].forEach(type => {
+                    elem.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }));
                 });
-                
-                // For React 16/17+ - also update internal state
-                var reactProps = Object.keys(elem).find(key => key.startsWith('__reactProps'));
-                if (reactProps) {
-                    var onChange = elem[reactProps]?.onChange;
-                    if (onChange) {
-                        onChange({ target: elem });
+
+                // React support
+                const reactKey = Object.keys(elem).find(k => 
+                    k.startsWith('__reactProps$') || 
+                    k.startsWith('__reactFiber$') || 
+                    k.startsWith('__reactInternalInstance$')
+                );
+                if (reactKey && elem[reactKey]) {
+                    const props = elem[reactKey].memoizedProps || 
+                                elem[reactKey].return?.memoizedProps;
+                    if (props && typeof props.onChange === 'function') {
+                        props.onChange({ target: elem, currentTarget: elem });
                     }
                 }
             """, el, text)
-            allure.attach(f"Used JS to set value with emojis: {text}", name="send_keys_method", attachment_type=allure.attachment_type.TEXT)
+
+            allure.attach(
+                name="send_keys_method",
+                body=f"JS injection (non-BMP chars): {text!r}",
+                attachment_type=allure.attachment_type.TEXT
+            )
         else:
             el.send_keys(text)
+            allure.attach(
+                name="send_keys_method",
+                body="Native send_keys (normal text)",
+                attachment_type=allure.attachment_type.TEXT
+            )
 
 
     @allure.step("Get text of {locator}")

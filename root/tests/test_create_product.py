@@ -165,9 +165,9 @@ class TestCreateProducts(BaseTest):
 
     @allure.title("TC011 - Add more info after summitted product form") 
     @pytest.mark.parametrize("setup", [
-    # pytest.param({"scenario": "normal"},        marks=pytest.mark.normal),
-    # pytest.param({"scenario": "max_length"},    marks=pytest.mark.max_length),
-    # pytest.param({"scenario": "special_chars"}, marks=pytest.mark.special_chars),
+    pytest.param({"scenario": "normal"},        marks=pytest.mark.normal),
+    pytest.param({"scenario": "max_length"},    marks=pytest.mark.max_length),
+    pytest.param({"scenario": "special_chars"}, marks=pytest.mark.special_chars),
     pytest.param({"scenario": "with_emoji"},    marks=pytest.mark.emoji),
 ], indirect=True)
     def test_create_product_with_more_info(self):
@@ -177,12 +177,14 @@ class TestCreateProducts(BaseTest):
         self.create_product_page.click_save_btn()
         assert self.create_product_page.verify_toast_success_message(expected_text="Product created successfully")
         assert self.create_product_page.redirect_to_edit_page()
+        self.create_product_page.wait_for_page_loaded()
         self.create_product_page.select_category()
         self.create_product_page.add_description(self.description)
         self.create_product_page.upload_image(self.image)
         self.create_product_page.enter_product_meta_description(self.meta_description)
         self.create_product_page.click_save_btn()
         assert self.create_product_page.verify_toast_success_message(expected_text="Product updated successfully")
+        
          # Bonus: Log product to debug easily
         allure.attach(f"Created product: {self.name}\nSKU: {self.sku}", name="Product Info", attachment_type=allure.attachment_type.TEXT)
 
@@ -205,24 +207,24 @@ class TestCreateProducts(BaseTest):
         self.original_name = self.name  # This is the name used when the product was created
         self.new_name = product_data["name"] + product_data["suffix"]
         self.new_sku = product_data["sku"] 
-        self.price = "999"
-        self.weight = "5.9"
-        self.quantity = "1000"
+        self.new_price = "999"
+        self.new_weight = "5.9"
+        self.new_quantity = "1000"
 
        # Step 2: Find the product by original name
-        product_page = ProductsPage(self.driver)
-        product_page.wait_for_page_loaded()
-        selected_row = product_page.find_product_row_by_name(self.original_name)
-        assert selected_row is not None, f"No product found: {self.original_name}"
-        product_page.select_product(selected_row)
+        self.product_page = ProductsPage(self.driver)
+        self.product_page.wait_for_page_loaded()
+        self.selected_row = self.product_page.find_product_row_by_name(self.original_name)
+        assert self.selected_row is not None, f"No product found: {self.original_name}"
+        self.product_page.select_product(self.selected_row)
 
        # Step 3: Edit the product with updated data
         self.create_product_page.edit_product_with_required_fields(
             name = self.new_name, 
             sku = self.new_sku, 
-            price = self.price,
-            weight = self.weight, 
-            quantity = self.quantity, 
+            price = self.new_price,
+            weight = self.new_weight, 
+            quantity = self.new_quantity, 
             url_key = self.url_key, 
             meta_title = self.meta_title)
         self.create_product_page.select_color("White")
@@ -233,7 +235,7 @@ class TestCreateProducts(BaseTest):
         self.create_product_page.back_to_product_page()
 
         # Search by full edited name or part of it
-        edited_row = product_page.find_product_row_by_name(self.new_name)
+        edited_row = self.product_page.find_product_row_by_name(self.new_name)
         assert edited_row is not None, f"No product found: {self.new_name}"
 
 

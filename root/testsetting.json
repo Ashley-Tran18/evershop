@@ -12,6 +12,10 @@
     "email": "admin@e2eevershop.com",
     "password": "wrongpass"
   },
+  "email_only": {
+    "email": "admin@e2eevershop.com",
+    "password": ""
+  },
   "invalid_email_format": {
     "email": "admin",
     "password": "A0F4IQUHPvgOsZ44"

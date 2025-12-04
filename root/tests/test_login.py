@@ -71,7 +71,7 @@ class TestLogin(BaseTest):
     @allure.title("TC008 - Verify Email Only Filled → Login Should Fail")
     def test_email_only(self):
         login_page = LoginPage(self.driver)
-        login_page.enter_email(ConfigReader.get_credentials("invalid_password"))
+        login_page.enter_email(ConfigReader.get_credentials("email_only"))
         login_page.click_sign_in()
         assert login_page.is_password_displayed()
         assert ConfigReader.get_error_message("password_required") in login_page.get_password_error_text()
